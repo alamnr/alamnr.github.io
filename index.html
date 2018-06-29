@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <!-- Set the viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="Description" content="github profile summary pwa service worker manifest promise API">
+  <!-- Set character encoding -->
+  <meta charset="utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Github Profile Summary - Visualize Your github Profile</title>
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#2E3AA1">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PSK">
+  <link rel="icon" sizes="192x192" href="images/touch/icon-192x192.png">
+
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+  <link rel="apple-touch-icon" href="images/touch/icon-192x192.png">
+
+  <!-- Tile for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+  <meta name="msapplication-TileImage" content="images/touch/icon-192x192.png">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/new_git_promise.js"></script>
+  <style>
+    .container {
+      padding: 15% 25%;
+    }
+  </style>
+</head>
+
+<body>
+  <nav></nav>
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div>
+
+            <div class="form-group text-center">
+              <!--<label class="h3 mb-3 font-weight-normal">Enter GitHub User Name</label>-->
+              <p class="mb-3 font-weight-normal h3 text-xs-center text-md-center text-lg-center text-xl-center">Enter GitHub User Name</p>
+              <!--<input type="text" class="form-control" id="gitUserName" placeholder="Ex: alamnr"> -->
+              <div class="input-group text-center">
+                    <input class="form-control py-2" type="search" placeholder="Ex: alamnr" id="gitUserName">
+                    <span class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="userSearchBtn">
+                          <i class="fa fa-search"></i>
+                      </button>
+                    </span>
+              </div>
+
+            </div>
+
+
+
+            <div id="errMsg" class="mb-3 font-weight-normal text-center"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+  <footer>
+    <div class="fixed-bottom-custom">
+      <div>GitHub profile summary is built with
+        <span class="highlight">Vanilla Jvascript </span> and
+        <a href="http://www.chartjs.org/docs/latest/" target="_blank"  rel="noopener">chart.js</a> (visualization). Sources on
+        <a target="_blank"  rel="noopener" href="https://github.com/alamnr/alamnr.github.io"> GitHub.</a>
+      </div>
+      <div> Inspired by
+        <a href="https://profile-summary-for-github.com" target="_blank"  rel="noopener">profile-summary-for-github</a>
+      </div>
+    </div>
+  </footer>
+
+  <span class="rate-limit">
+        <span class="msg">The app is currently rate-limited<br>Please check back later</span>
+  <span class="count"><span id="rate-limit-count"></span> requests left <br> before rate-limit</span>
+  </span>
+
+  <script>
+    var callback = function() {
+
+      checkRateLimit();
+    };
+
+    if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
+      callback();
+    } else {
+      document.addEventListener("DOMContentLoaded", callback);
+    }
+
+    document.getElementById('userSearchBtn').addEventListener('click',()=>{
+      if (document.getElementById('gitUserName').value) {
+        checkUserPresence(document.getElementById('gitUserName').value);
+
+      } else {
+        document.getElementById('errMsg').innerHTML = 'User Name Can\'t be Blank';
+        document.getElementById('errMsg').style.color = 'red';
+      }
+    });
+
+    document.getElementById('gitUserName').addEventListener('keyup', function(e) {
+
+      if (e.keyCode == 13) {
+
+        if (e.target.value) {
+          checkUserPresence(e.target.value);
+
+        } else {
+          document.getElementById('errMsg').innerHTML = 'User Name Can\'t be Blank';
+          document.getElementById('errMsg').style.color = 'red';
+        }
+
+      }
+
+
+
+    });
+
+
+
+    function checkUserPresence(userName) {
+
+      var url = 'https://api.github.com/users/' + userName + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+      var xhr = createCORSRequest('GET', url);
+      if (!xhr) {
+        console.log('CORS not supported');
+        return;
+      }
+
+      xhr.onreadystatechange = function() {
+
+        if (this.readyState == 4 && this.status == 200) {
+          var user = JSON.parse(this.responseText);
+          //console.log(user);
+          document.getElementById('errMsg').innerHTML = '<a class="btn btn-primary" href="profile.html?user=' + userName + '">View Profile</a>';
+        }
+        if (this.readyState == 4 && this.status == 404) {
+          var response = JSON.parse(this.responseText);
+          //console.log(response.message);
+          document.getElementById('errMsg').innerHTML = 'User Not Found';
+          document.getElementById('errMsg').style.color = 'red';
+        }
+        checkRateLimit();
+      }
+
+      // Handle network error
+      xhr.onerror = () => {
+        document.getElementById('errMsg').innerHTML = 'Network Error';
+        document.getElementById('errMsg').style.color = 'red';
+
+      }
+
+      xhr.send();
+    }
+  </script>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+
+</html>

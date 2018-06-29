@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <!-- Set the viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="Description" content="github profile summary pwa service worker manifest promise API">
+  <!-- Set character encoding -->
+  <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title id="title">Github Profile Summary</title>
+
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#2E3AA1">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="PSK">
+    <link rel="icon" sizes="192x192" href="images/touch/icon-192x192.png">
+
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+    <link rel="apple-touch-icon" href="images/touch/icon-192x192.png">
+
+    <!-- Tile for Win8 -->
+    <meta name="msapplication-TileColor" content="#3372DF">
+    <!--<meta name="msapplication-TileImage" content="images/touch/icon-192x192.png">-->
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/load-awesome@1.1.0/css/square-jelly-box.min.css">
+
+    <link rel="stylesheet" href="css/social-boot.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <!--<script src="js/app.js"></script>-->
+    <script src="js/new_git_promise.js"></script>
+    <script src="js/chart-1.js"></script>
+    <!--<script src="js/chart.js"></script>-->
+
+</head>
+
+<body>
+
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                        <nav class="breadcrumb" id="nav">
+                                <a class="breadcrumb-item" href="index.html">Home</a>
+                                <span class="breadcrumb-item active">Profile Summary</span>
+                              </nav>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-6 col-lg-7">
+
+                    <div class="progress">
+                        <div id="indicator" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width:0%">
+                            0%
+                        </div>
+
+                    </div>
+                    <p id="errMsg" class="text-center"></p>
+
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2">
+                        <div class="text-center">
+                                <a class="btn btn-social-icon btn-twitter" title="Share On Twiiter" id="twitter" target="_blank"  rel="noopener">
+                                        <span class="fa fa-twitter"></span>
+                                </a>
+                                <a class="btn btn-social-icon btn-facebook" title="Share On Facebook" id="facebook" target="_blank"  rel="noopener">
+                                        <span class="fa fa-facebook"></span>
+                                </a>
+                        </div>
+                </div>
+
+            </div>
+            </div>
+
+    </section>
+
+    <hr>
+
+    <section id="header">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-2">
+                    <img id="profileImage" width=175px class="rounded">
+                    <p id="bio"></p>
+                </div>
+                <div id="userDetail" class="col-xs-12 col-sm-12 col-md-12 col-lg-3">
+
+                </div>
+                <div id="graph" class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
+                    <canvas id="quarterCommitCount"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+    <hr>
+    <section id="mainContent-1">
+        <div class="container">
+            <div class="row">
+                <div id="langRepoCountDiv" class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                    <h4 class="text-center">Repos per Language</h4>
+                    <canvas id="langRepoCount"></canvas>
+                </div>
+
+                <div id="langCommitCountDiv" class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                    <h4 class="text-center">Commits per Language</h4>
+                    <canvas id="langCommitCount"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+    <br>
+    <hr>
+    <section id="mainContent-2">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div id="repoCommitCountDiv" class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <h4 class="text-center">Commits per Repo (top 10)</h4>
+                    <canvas id="repoCommitCount"></canvas>
+                </div>
+
+            </div>
+        </div>
+
+
+    </section>
+
+    <br><hr>
+    <footer><div class="fixed-bottom-custom"><div>GitHub profile summary is built with <span class="highlight">Vanilla Jvascript </span>  and <a href="http://www.chartjs.org/docs/latest/" target="_blank"  rel="noopener">chart.js</a> (visualization). Sources on <a target="_blank"  rel="noopener" href="https://github.com/alamnr/alamnr.github.io"> GitHub.</a></div><div> Inspired by <a href="https://profile-summary-for-github.com" target="_blank"  rel="noopener">profile-summary-for-github</a></div></div></footer>
+
+    <span class="rate-limit">
+        <span class="msg">The app is currently rate-limited<br>Please check back later</span>
+        <span class="count"><span id="rate-limit-count"></span> requests left <br> before rate-limit</span>
+    </span>
+
+
+    <script>
+        var urlParams;
+
+        (window.onpopstate = function () {
+            checkRateLimit();
+            var match,
+                pl = /\+/g,  // Regex for replacing addition symbol with a space
+                search = /([^&=]+)=?([^&]*)/g,
+                decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                query = window.location.search.substring(1);
+
+            urlParams = {};
+            while (match = search.exec(query)){
+                urlParams[decode(match[1])] = decode(match[2]);
+            }
+
+            document.getElementById('title').innerText = urlParams['user'] + '\'s Github Profile Summary';
+
+            // Don't pollute the global scope, create data Object in function Scope
+            if(urlParams['user']){
+                document.body.setAttribute('data-user-id',urlParams['user']);
+                var data = createDataObject();
+                getUserInfo(urlParams['user'], data);
+            }
+            else{
+				window.location.replace(window.location.href.substring(0,window.location.href.lastIndexOf('/')+1)+'index.html');
+            }
+
+
+        })();
+
+
+
+
+
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+
+
+</body>
+
+</html>
