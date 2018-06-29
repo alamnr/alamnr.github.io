@@ -1,6 +1,6 @@
 {
   "name": "GitHub Profile Summary",
-  "short_name": "Profile",
+  "short_name": "GitHub Profile Summary",
   "start_url": "index.html",
   "icons": [{
         "src": "images/touch/icon-128x128.png",
