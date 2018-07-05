@@ -6,6 +6,6 @@ Help taken from  - https://medium.com/adobetech/how-to-combine-rest-api-calls-wi
 				 - https://developers.google.com/web/fundamentals/primers/promises
 				 - https://developers.google.com/web/ilt/pwa/introduction-to-service-worker
 				 
-Github Profile Summary using Javascript Module Pattern ( mama says don't pollute  the global scope), Promise API, implementing PWA feature i.e. Service worker registration, install and activation, caching static resources, integrating google analytics, OGP support ( Open Graph Protocol) etc..
+Github Profile Summary using Javascript Module Pattern ( mama says don't pollute  the global scope), Promise API, implementing PWA features i.e. Service worker registration, installation and activation, caching static resources, integrating google analytics, OGP meta( Open Graph Protocol) etc..
 
 Click here to view your github profile summary - https://alamnr.github.io
