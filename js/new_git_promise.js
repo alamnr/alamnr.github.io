@@ -65,12 +65,16 @@ function getFollow_ing_ers(url, follow_ing_ers) {
   //console.log('repo url-',url);
   return getJSON(url).then(response => {
     //console.log(response);
+    var obj = {};
+
     if (!follow_ing_ers) {
       follow_ing_ers = [];
     }
     follow_ing_ers = follow_ing_ers.concat(response.data);
+    obj.followArray = follow_ing_ers;
     //console.log(follow_ing_ers.length + " follow_ing_ers so far");
     //console.log("repos- ",response);
+    /*
     if (response.linkData) {
       if (parse_link_header(response.linkData).next) {
 
@@ -81,11 +85,19 @@ function getFollow_ing_ers(url, follow_ing_ers) {
         return getFollow_ing_ers(next, follow_ing_ers);
       }
     }
+    */
 
+    if (response.linkData) {
+      obj.prev =  parse_link_header(response.linkData).prev;
+      obj.next =  parse_link_header(response.linkData).next;
+      obj.last = parse_link_header(response.linkData).last;
+      obj.first = parse_link_header(response.linkData).first;
+    }
 
     //console.log('Repo Array - ',repos);
 
-    return follow_ing_ers;
+    //return follow_ing_ers;
+    return obj;
 
 
   }).catch(err => console.log(err));
@@ -266,14 +278,21 @@ function getUserInfo(userName, dataObj) {
     })
 }
 
-function fetchFollowing_n_Followers(dataObj){
+function fetchFollowing_n_Followers(dataObj,url){
 
         Promise.resolve().then(() => {
-            return getFollow_ing_ers(dataObj.getUser().url + '/following?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            if(url && url.indexOf('following') !==-1){
+              dataObj.setFollowing([]);
+              return getFollow_ing_ers(url);
+            }
+            else{
+              return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            }
+
           })
-          .then(following => {
+          .then(followingObj => {
             //console.log('All fetched following-', following);
-            following.map(obj => {
+            followingObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
               let indecatorValue = 20 / followingArray.length;
@@ -282,14 +301,17 @@ function fetchFollowing_n_Followers(dataObj){
               }).then(objData => {
 
                 indecatorValue *= curIndex + 1;
-                document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
-                document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+                if(!url){
+                  document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
+                  document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+                }
+
                 // console.log('obj data-', objData.bio)
                 dataObj.getFollowing().push(objData);
 
                 if (curIndex === followingArray.length - 1) {
                   console.log('All Done Following-', dataObj.getFollowing());
-                  buildFollowing_card(dataObj);
+                  buildFollowing_card(dataObj,followingObj);
                 }
               });
             }, Promise.resolve());
@@ -299,11 +321,17 @@ function fetchFollowing_n_Followers(dataObj){
 
 
         Promise.resolve().then(() => {
-            return getFollow_ing_ers(dataObj.getUser().url + '/followers?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            if(url && url.indexOf('followers') !==-1){
+              dataObj.setFollowers([]);
+              return getFollow_ing_ers(url);
+            }
+            else{
+              return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            }
           })
-          .then(followers => {
+          .then(followersObj => {
           //  console.log('All fetched followers-', followers);
-            followers.map(obj => {
+            followersObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
               let indecatorValue = 20 / followerArray.length;
@@ -312,16 +340,16 @@ function fetchFollowing_n_Followers(dataObj){
               }).then(objData => {
 
                 indecatorValue *= curIndex + 1;
-                document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
-                document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
+                if(!url){
+                  document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
+                  document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
+                }
+
                 //console.log('obj data-', objData.bio)
                 dataObj.getFollowers().push(objData);
                 if (curIndex === followerArray.length - 1) {
                   console.log('All Done Followers-', dataObj.getFollowers());
-                  buildFollowers_card(dataObj);
-                  document.querySelector('#indicator').style.width = '100%';
-                  document.querySelector('#indicator').innerHTML = '100% Done!';
-                  setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
+                  buildFollowers_card(dataObj,followersObj);
 
                 }
               });
@@ -351,9 +379,19 @@ function buildUserDetails(user) {
   document.getElementById('userDetail').innerHTML = output;
 }
 
-function buildFollowing_card(dataObj) {
+function buildFollowing_card(dataObj,followingObj,url) {
+  if(url){
+    document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv').lasttChild);
+    document.querySelector('#followingDiv .gridFollowing').innerHTML  = '';
+  }
+  if(followingObj.last){
+    var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
+    document.querySelector('#followingDiv h4').innerText = 'Following ('+100*lastPageNo+') :';
 
-  document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+  }
+  else{
+    document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+  }
 
     let followingDiv = document.querySelector('#followingDiv .gridFollowing');
 
@@ -380,12 +418,38 @@ function buildFollowing_card(dataObj) {
       columnWidth: 25
     });
 
+    let paging = `
+                <nav aria-label="Page navigation example">
+                  <ul class="pagination justify-content-center">
+
+                    <li class="page-item ${followingObj.first?'':'disabled'} ">
+                    <a class="page-link" href="#" ${followingObj.first?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.first})'>First</a>
+                    </li>
+                    <li class="page-item ${followingObj.prev?'':'disabled'}"><a class="page-link" href="#" ${followingObj.first?'':'tabindex="-1"'} onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.prev})'>Previous</a></li>
+                    <li class="page-item ${followingObj.next?'':'disabled'}"><a class="page-link" href="#" ${followingObj.next?'':'tabindex="-1"'} onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.next})'>Next</a></li>
+                    <li class="page-item ${followingObj.last?'':'disabled'}"><a class="page-link" href="#" ${followingObj.last?'':'tabindex="-1"'} onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.last})'>Last</a></li>
+
+                  </ul>
+                </nav>
+                  `;
+                  document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
   }
 
 }
-function buildFollowers_card(dataObj) {
+function buildFollowers_card(dataObj,followersObj,url) {
+  if(url){
+    document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv').lasttChild);
+    document.querySelector('#followersDiv .gridFollowers').innerHTML  = '';
+  }
 
-  document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+  if(followersObj.last){
+    var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=')+5,followersObj.last.length));
+    document.querySelector('#followersDiv h4').innerText = 'Followers ('+100*lastPageNo+') :';
+
+  }
+  else{
+    document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+  }
 
     let followersDiv = document.querySelector('#followersDiv .gridFollowers');
 
@@ -412,7 +476,26 @@ function buildFollowers_card(dataObj) {
       itemSelector: '.grid-item',
       columnWidth: 25
     });
+    let paging = `
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
 
+        <li class="page-item ${followersObj.first?'':'disabled'} ">
+        <a class="page-link" href="#" ${followersObj.first?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.first})'>First</a>
+        </li>
+        <li class="page-item ${followersObj.prev?'':'disabled'}"><a class="page-link" href="#" ${followersObj.first?'':'tabindex="-1"'}   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.prev})'>Previous</a></li>
+        <li class="page-item ${followersObj.next?'':'disabled'}"><a class="page-link" href="#" ${followersObj.next?'':'tabindex="-1"'} onDblClick='alert(\'Me\')'   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.next})'>Next</a></li>
+        <li class="page-item ${followersObj.last?'':'disabled'}"><a class="page-link" href="#" ${followersObj.last?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.last})'>Last</a></li>
+
+      </ul>
+    </nav>
+                  `;
+                  document.querySelector('#followersDiv').appendChild(document.createRange().createContextualFragment(paging));
+  }
+  if(!url){
+    document.querySelector('#indicator').style.width = '100%';
+    document.querySelector('#indicator').innerHTML = '100% Done!';
+    setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 2000);
   }
 
 
