@@ -319,7 +319,9 @@ function fetchFollowing_n_Followers(dataObj){
                 if (curIndex === followerArray.length - 1) {
                   console.log('All Done Followers-', dataObj.getFollowers());
                   buildFollow_ing_ers_card(dataObj);
-
+                  document.querySelector('#indicator').style.width = '100%';
+                  document.querySelector('#indicator').innerHTML = '100% Done!';
+                  setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
 
                 }
               });
@@ -378,7 +380,7 @@ function buildFollow_ing_ers_card(dataObj) {
       itemSelector: '.grid-item',
       columnWidth: 25
     });
-    dataObj.getFollowers() = [];
+    dataObj.setFollowers([]);
   }
 
   if (dataObj.getFollowing().length != 0 ) {
@@ -403,11 +405,8 @@ function buildFollow_ing_ers_card(dataObj) {
       itemSelector: '.grid-item',
       columnWidth: 25
     });
-    dataObj.getFollowing() = [];
+    dataObj.setFollowing([]);
   }
-
-
-
 
 }
 
@@ -724,9 +723,15 @@ function createDataObject() {
     getFollowing: function() {
       return following;
     },
+    setFollowing:function(emptyArray) {
+      following = emptyArray;
+    },
     getFollowers: function() {
       return followers;
-    }
+    },
+    setFollowers():function(emptyArray) {
+        followers = emptyArray;
+      }
 
   };
   return dataObject;
