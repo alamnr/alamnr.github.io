@@ -282,8 +282,8 @@ function fetchFollowing_n_Followers(dataObj){
               }).then(objData => {
 
                 indecatorValue *= curIndex + 1;
-                indicatorDiv.style.width = Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
-                indicatorDiv.innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+                document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
+                document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
                 // console.log('obj data-', objData.bio)
                 dataObj.getFollowing().push(objData);
 
@@ -311,9 +311,9 @@ function fetchFollowing_n_Followers(dataObj){
                 return followersObjPromise;
               }).then(objData => {
 
-                indecatorValue *= currentIndex + 1;
-                indicatorDiv.style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
-                indicatorDiv.innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
+                indecatorValue *= curIndex + 1;
+                document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
+                document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
                 //console.log('obj data-', objData.bio)
                 dataObj.getFollowers().push(objData);
                 if (curIndex === followerArray.length - 1) {
