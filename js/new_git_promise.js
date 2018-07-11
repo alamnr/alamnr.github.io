@@ -292,6 +292,8 @@ function fetchFollowing_n_Followers(dataObj,url){
           })
           .then(followingObj => {
             //console.log('All fetched following-', following);
+            document.querySelector('#followingDiv h4').innerText = 'Followers ('+followingObj.followArray.length+') :';
+
             followingObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
@@ -331,6 +333,9 @@ function fetchFollowing_n_Followers(dataObj,url){
           })
           .then(followersObj => {
           //  console.log('All fetched followers-', followers);
+
+          document.querySelector('#followersDiv h4').innerText = 'Followers ('+followersObj.followArray.length+') :';
+
             followersObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
@@ -484,7 +489,7 @@ function buildFollowers_card(dataObj,followersObj,url) {
         <a class="page-link" href="#" ${followersObj.first?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.first})'>First</a>
         </li>
         <li class="page-item ${followersObj.prev?'':'disabled'}"><a class="page-link" href="#" ${followersObj.first?'':'tabindex="-1"'}   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.prev})'>Previous</a></li>
-        <li class="page-item ${followersObj.next?'':'disabled'}"><a class="page-link" href="#" ${followersObj.next?'':'tabindex="-1"'} onDblClick='alert(\'Me\')'   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.next})'>Next</a></li>
+        <li class="page-item ${followersObj.next?'':'disabled'}"><a class="page-link" href="#" ${followersObj.next?'':'tabindex="-1"'}   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.next})'>Next</a></li>
         <li class="page-item ${followersObj.last?'':'disabled'}"><a class="page-link" href="#" ${followersObj.last?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.last})'>Last</a></li>
 
       </ul>
