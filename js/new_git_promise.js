@@ -355,7 +355,7 @@ function buildFollow_ing_ers_card(dataObj) {
   document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
     let followersDiv = document.querySelector('#followersDiv .gridFollowers');
     let followingDiv = document.querySelector('#followingDiv .gridFollowing');
-  if (dataObj.getFollowers().length != 0 && !followersDiv.hasChildNodes()) {
+  if (dataObj.getFollowers().length != 0 && !followersDiv.contains(document.querySelector('span'))) {
 
 
     dataObj.getFollowers().forEach(obj => {
@@ -380,7 +380,7 @@ function buildFollow_ing_ers_card(dataObj) {
     });
   }
 
-  if (dataObj.getFollowing().length != 0  && !followingDiv.hasChildNodes()) {
+  if (dataObj.getFollowing().length != 0  && !followingDiv.contains(document.querySelector('span'))) {
 
     dataObj.getFollowing().forEach(obj => {
       let output = ` <div class="grid-item">
