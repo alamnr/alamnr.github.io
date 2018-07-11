@@ -355,7 +355,7 @@ function buildFollow_ing_ers_card(dataObj) {
   document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
     let followersDiv = document.querySelector('#followersDiv .gridFollowers');
     let followingDiv = document.querySelector('#followingDiv .gridFollowing');
-  if (dataObj.getFollowers().length != 0 && !followersDiv.contains(document.querySelector('span'))) {
+  if (dataObj.getFollowers().length != 0 ) {
 
 
     dataObj.getFollowers().forEach(obj => {
@@ -378,9 +378,10 @@ function buildFollow_ing_ers_card(dataObj) {
       itemSelector: '.grid-item',
       columnWidth: 25
     });
+    dataObj.getFollowers() = [];
   }
 
-  if (dataObj.getFollowing().length != 0  && !followingDiv.contains(document.querySelector('span'))) {
+  if (dataObj.getFollowing().length != 0 ) {
 
     dataObj.getFollowing().forEach(obj => {
       let output = ` <div class="grid-item">
@@ -402,12 +403,10 @@ function buildFollow_ing_ers_card(dataObj) {
       itemSelector: '.grid-item',
       columnWidth: 25
     });
+    dataObj.getFollowing() = [];
   }
 
 
-  document.querySelector('#indicator').style.width = '100%';
-  document.querySelector('#indicator').innerHTML = '100% Done!';
-  setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
 
 
 }
