@@ -140,62 +140,6 @@ function getUserInfo(userName, dataObj) {
       indicatorDiv.style.width = '10%';
       indicatorDiv.innerHTML = '10% wait...';
 
-      Promise.resolve().then(() => {
-          return getFollow_ing_ers(userData.url + '/following?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-        })
-        .then(following => {
-          //console.log('All fetched following-', following);
-          following.map(obj => {
-            return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-          }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
-            let indecatorValue = 20 / followingArray.length;
-            return sequence.then(() => {
-              return followingObjPromise;
-            }).then(objData => {
-
-              indecatorValue *= curIndex + 1;
-              indicatorDiv.style.width = Number.parseFloat(10+ indecatorValue).toFixed(2) + '%';
-              indicatorDiv.innerHTML = Number.parseFloat(10 + indecatorValue).toFixed(2) + '% wait...';
-              // console.log('obj data-', objData.bio)
-              dataObj.getFollowing().push(objData);
-
-              if (curIndex === followingArray.length - 1) {
-                console.log('All Done Following-', dataObj.getFollowing());
-                buildFollow_ing_ers_card(dataObj);
-              }
-            });
-          }, Promise.resolve());
-        });
-
-
-
-
-      Promise.resolve().then(() => {
-          return getFollow_ing_ers(userData.url + '/followers?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-        })
-        .then(followers => {
-        //  console.log('All fetched followers-', followers);
-          followers.map(obj => {
-            return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-          }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
-            let indecatorValue = 20 / followerArray.length;
-            return sequence.then(() => {
-              return followersObjPromise;
-            }).then(objData => {
-
-              indecatorValue *= currentIndex + 1;
-              indicatorDiv.style.width = Number.parseFloat(30 + indecatorValue).toFixed(2) + '%';
-              indicatorDiv.innerHTML = Number.parseFloat(30 + indecatorValue).toFixed(2) + '% wait...';
-              //console.log('obj data-', objData.bio)
-              dataObj.getFollowers().push(objData);
-              if (curIndex === followerArray.length - 1) {
-                console.log('All Done Followers-', dataObj.getFollowers());
-                buildFollow_ing_ers_card(dataObj);
-              }
-            });
-          }, Promise.resolve());
-        });
-
 
 
 
@@ -208,8 +152,6 @@ function getUserInfo(userName, dataObj) {
       console.log('All fetched repos-', repos);
       dataObj.setRepos(repos);
 
-      indicatorDiv.style.width = '50%';
-      indicatorDiv.innerHTML = '50% wait...';
 
       // This code is done by following - https://developers.google.com/web/fundamentals/primers/promises#creating_a_sequence
       // and  - https://medium.com/adobetech/how-to-combine-rest-api-calls-with-javascript-promises-in-node-js-or-openwhisk-d96cbc10f299
@@ -291,11 +233,12 @@ function getUserInfo(userName, dataObj) {
           // console.log(currentIndex, ' - commits count - ', commits);
 
           indecatorValue *= currentIndex + 1;
-          indicatorDiv.style.width = Number.parseFloat(50 + indecatorValue).toFixed(2) + '%';
-          indicatorDiv.innerHTML = Number.parseFloat(50 + indecatorValue).toFixed(2) + '% wait...';
+          indicatorDiv.style.width = Number.parseFloat(10 + indecatorValue).toFixed(2) + '%';
+          indicatorDiv.innerHTML = Number.parseFloat(10 + indecatorValue).toFixed(2) + '% wait...';
 
           if (currentIndex === repoArray.length - 1) {
             console.log('All Done-', dataObj.getCommitMap());
+            fetchFollowing_n_Followers(dataObj);  
             calculateDataAndGenerateChart(dataObj);
             checkRateLimit();
           }
@@ -306,7 +249,7 @@ function getUserInfo(userName, dataObj) {
       if (dataObj.getRepos().filter(repo => {
           return repo.fork === false && repo.size !== 0
         }).length === 0) {
-
+        fetchFollowing_n_Followers(dataObj);
         calculateDataAndGenerateChart(dataObj);
         checkRateLimit();
       }
@@ -321,6 +264,70 @@ function getUserInfo(userName, dataObj) {
       document.getElementById('errMsg').innerHTML = err;
       document.getElementById('errMsg').style.color = 'red';
     })
+}
+
+function fetchFollowing_n_Followers(dataObj){
+
+        Promise.resolve().then(() => {
+            return getFollow_ing_ers(dataObj.getUser().url + '/following?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+          })
+          .then(following => {
+            //console.log('All fetched following-', following);
+            following.map(obj => {
+              return getJSON(dataObj.getUser().url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
+              let indecatorValue = 20 / followingArray.length;
+              return sequence.then(() => {
+                return followingObjPromise;
+              }).then(objData => {
+
+                indecatorValue *= curIndex + 1;
+                indicatorDiv.style.width = Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
+                indicatorDiv.innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+                // console.log('obj data-', objData.bio)
+                dataObj.getFollowing().push(objData);
+
+                if (curIndex === followingArray.length - 1) {
+                  console.log('All Done Following-', dataObj.getFollowing());
+                  buildFollow_ing_ers_card(dataObj);
+                }
+              });
+            }, Promise.resolve());
+          });
+
+
+
+
+        Promise.resolve().then(() => {
+            return getFollow_ing_ers(dataObj.getUser().url + '/followers?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+          })
+          .then(followers => {
+          //  console.log('All fetched followers-', followers);
+            followers.map(obj => {
+              return getJSON(dataObj.getUser().url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
+              let indecatorValue = 20 / followerArray.length;
+              return sequence.then(() => {
+                return followersObjPromise;
+              }).then(objData => {
+
+                indecatorValue *= currentIndex + 1;
+                indicatorDiv.style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
+                indicatorDiv.innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
+                //console.log('obj data-', objData.bio)
+                dataObj.getFollowers().push(objData);
+                if (curIndex === followerArray.length - 1) {
+                  console.log('All Done Followers-', dataObj.getFollowers());
+                  buildFollow_ing_ers_card(dataObj);
+
+                  document.querySelector('#indicator').style.width = '100%';
+                  document.querySelector('#indicator').innerHTML = '100% Done!';
+                  setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
+                }
+              });
+            }, Promise.resolve());
+          });
+
 }
 
 function buildUserDetails(user) {
@@ -436,9 +443,7 @@ function calculateDataAndGenerateChart(dataObj) {
     //buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
 
-    document.querySelector('#indicator').style.width = '100%';
-    document.querySelector('#indicator').innerHTML = '100% Done!';
-    setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
+
   } else {
 
     unforkRepo.forEach((myRepo, index, repoArray) => {
