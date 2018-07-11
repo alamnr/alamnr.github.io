@@ -353,10 +353,11 @@ function buildFollow_ing_ers_card(dataObj) {
 
   document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
   document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+    let followersDiv = document.querySelector('#followersDiv .gridFollowers');
+    let followingDiv = document.querySelector('#followingDiv .gridFollowing');
+  if (dataObj.getFollowers().length != 0 && !followersDiv.hasChildNodes()) {
 
-  if (dataObj.getFollowers().length != 0) {
 
-    let targetDiv = document.querySelector('#followersDiv .gridFollowers');
     dataObj.getFollowers().forEach(obj => {
       let output = ` <div class="grid-item">
     <div class="card" style="width: 10rem;">
@@ -379,10 +380,8 @@ function buildFollow_ing_ers_card(dataObj) {
     });
   }
 
-  if (dataObj.getFollowing().length != 0) {
+  if (dataObj.getFollowing().length != 0  && !followingDiv.hasChildNodes()) {
 
-
-    let targetDiv = document.querySelector('#followingDiv .gridFollowing');
     dataObj.getFollowing().forEach(obj => {
       let output = ` <div class="grid-item">
 		<div class="card" style="width: 10rem;">
