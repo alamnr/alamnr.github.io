@@ -148,7 +148,7 @@ function getUserInfo(userName, dataObj) {
           following.map(obj => {
             return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
           }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
-            let indecatorValue = 20 / repoArray.length;
+            let indecatorValue = 20 / followingArray.length;
             return sequence.then(() => {
               return followingObjPromise;
             }).then(objData => {
@@ -178,7 +178,7 @@ function getUserInfo(userName, dataObj) {
           followers.map(obj => {
             return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
           }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
-            let indecatorValue = 20 / repoArray.length;
+            let indecatorValue = 20 / followerArray.length;
             return sequence.then(() => {
               return followersObjPromise;
             }).then(objData => {
