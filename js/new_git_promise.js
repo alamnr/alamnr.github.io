@@ -137,6 +137,8 @@ function getUserInfo(userName, dataObj) {
       console.log('Email-', userData.email);
       dataObj.setUser(userData);
 
+      indicatorDiv.style.width = '10%';
+      indicatorDiv.innerHTML = '10% wait...';
 
       Promise.resolve().then(() => {
           return getFollow_ing_ers(userData.url + '/following?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
@@ -146,9 +148,14 @@ function getUserInfo(userName, dataObj) {
           following.map(obj => {
             return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
           }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
+            let indecatorValue = 20 / repoArray.length;
             return sequence.then(() => {
               return followingObjPromise;
             }).then(objData => {
+
+              indecatorValue *= curIndex + 1;
+              indicatorDiv.style.width = Number.parseFloat(10+ indecatorValue).toFixed(2) + '%';
+              indicatorDiv.innerHTML = Number.parseFloat(10 + indecatorValue).toFixed(2) + '% wait...';
               // console.log('obj data-', objData.bio)
               dataObj.getFollowing().push(objData);
 
@@ -171,9 +178,14 @@ function getUserInfo(userName, dataObj) {
           followers.map(obj => {
             return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
           }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
+            let indecatorValue = 20 / repoArray.length;
             return sequence.then(() => {
               return followersObjPromise;
             }).then(objData => {
+
+              indecatorValue *= currentIndex + 1;
+              indicatorDiv.style.width = Number.parseFloat(30 + indecatorValue).toFixed(2) + '%';
+              indicatorDiv.innerHTML = Number.parseFloat(30 + indecatorValue).toFixed(2) + '% wait...';
               //console.log('obj data-', objData.bio)
               dataObj.getFollowers().push(objData);
               if (curIndex === followerArray.length - 1) {
@@ -185,8 +197,7 @@ function getUserInfo(userName, dataObj) {
         });
 
 
-      indicatorDiv.style.width = '25%';
-      indicatorDiv.innerHTML = '25% wait...';
+
 
       let url = 'https://api.github.com/users/' + userData.login + '/repos?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
 
@@ -335,8 +346,11 @@ function buildUserDetails(user) {
 
 function buildFollow_ing_ers_card(dataObj) {
 
+  document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+  document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+
   if (dataObj.getFollowers().length != 0) {
-    document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+
     let targetDiv = document.querySelector('#followersDiv .gridFollowers');
     dataObj.getFollowers().forEach(obj => {
       let output = ` <div class="grid-item">
@@ -362,7 +376,7 @@ function buildFollow_ing_ers_card(dataObj) {
 
   if (dataObj.getFollowing().length != 0) {
 
-    document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+
     let targetDiv = document.querySelector('#followingDiv .gridFollowing');
     dataObj.getFollowing().forEach(obj => {
       let output = ` <div class="grid-item">
