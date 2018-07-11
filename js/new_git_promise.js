@@ -341,7 +341,7 @@ function buildFollow_ing_ers_card(dataObj) {
     <div class="card" style="width: 10rem;">
   <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
   <div class="card-body">
-    <h6 class="card-title">${obj.name} <small>(${obj.login})</small></h6>
+    <h6 class="card-title">${obj.name?obj.name:''} <small>(${obj.login})</small></h6>
     <p><span style="float:left"><a href="https://alamnr.github.io/profile.html?user=${obj.login}" target="_blank"  rel="noopener"><small>Summary</small></a>
     </span><span style="float:right"><a href="https://github.com/${obj.login}" target="_blank"  rel="noopener"><small>Account</small></a></span></p>
 
