@@ -371,7 +371,7 @@ function buildFollow_ing_ers_card(dataObj) {
 </div>
     </div>`;
       let divToAppend = document.createRange().createContextualFragment(output);
-      targetDiv.appendChild(divToAppend);
+      followersDiv.appendChild(divToAppend);
     })
     var msnryFollowers = new Masonry( '.gridFollowers', {
       // options
@@ -395,7 +395,7 @@ function buildFollow_ing_ers_card(dataObj) {
 </div>
 		</div>`;
       let divToAppend = document.createRange().createContextualFragment(output);
-      targetDiv.appendChild(divToAppend);
+      followingDiv.appendChild(divToAppend);
     })
     var msnryFolowing = new Masonry( '.gridFollowing', {
       // options
