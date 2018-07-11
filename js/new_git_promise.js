@@ -274,7 +274,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(following => {
             //console.log('All fetched following-', following);
             following.map(obj => {
-              return getJSON(dataObj.getUser().url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+              return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
               let indecatorValue = 20 / followingArray.length;
               return sequence.then(() => {
@@ -304,7 +304,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(followers => {
           //  console.log('All fetched followers-', followers);
             followers.map(obj => {
-              return getJSON(dataObj.getUser().url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+              return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
               let indecatorValue = 20 / followerArray.length;
               return sequence.then(() => {
