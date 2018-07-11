@@ -1,4 +1,3 @@
-
 // Create the XHR object.
 function createCORSRequest(method, url) {
   var xhr = new XMLHttpRequest();
@@ -27,27 +26,28 @@ function get(url) {
         //resolve(req.response);
         //console.log(req.getResponseHeader('Link'));
         if (req.getResponseHeader('Link')) {
-          resolve(JSON.stringify({ linkData: req.getResponseHeader('Link'), data: JSON.parse(req.response) }));
-        }
-        else {
-          if (url.includes('repos') || url.includes('commits')) {
-            resolve(JSON.stringify({ data: JSON.parse(req.response) }));
-          }
-
-          else {
+          resolve(JSON.stringify({
+            linkData: req.getResponseHeader('Link'),
+            data: JSON.parse(req.response)
+          }));
+        } else {
+          if (url.includes('repos') || url.includes('commits') || url.includes('following') || url.includes('followers')) {
+            resolve(JSON.stringify({
+              data: JSON.parse(req.response)
+            }));
+          } else {
             resolve(req.response);
           }
 
         }
-      }
-      else {
+      } else {
         reject(Error(req.statusText));
       }
     };
     // Handle network error
     req.onerror = () => {
       reject(Error('Network Error'));
-      
+
     }
     req.send();
   });
@@ -59,6 +59,36 @@ function get(url) {
 
 function getJSON(url) {
   return get(url).then(JSON.parse)
+}
+
+function getFollow_ing_ers(url, follow_ing_ers) {
+  //console.log('repo url-',url);
+  return getJSON(url).then(response => {
+    //console.log(response);
+    if (!follow_ing_ers) {
+      follow_ing_ers = [];
+    }
+    follow_ing_ers = follow_ing_ers.concat(response.data);
+    console.log(follow_ing_ers.length + " follow_ing_ers so far");
+    //console.log("repos- ",response);
+    if (response.linkData) {
+      if (parse_link_header(response.linkData).next) {
+
+        //console.log("There is more.");
+
+        let next = parse_link_header(response.linkData).next;
+        //console.log('next - ',next);
+        return getFollow_ing_ers(next, follow_ing_ers);
+      }
+    }
+
+
+    //console.log('Repo Array - ',repos);
+
+    return follow_ing_ers;
+
+
+  }).catch(err => console.log(err));
 }
 
 function getUserRepos(url, repos) {
@@ -107,6 +137,52 @@ function getUserInfo(userName, dataObj) {
       console.log('Email-', userData.email);
       dataObj.setUser(userData);
 
+
+      Promise.resolve().then(() => {
+          return getFollow_ing_ers(userData.url + '/following?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+        })
+        .then(following => {
+          console.log('All fetched following-', following);
+          following.map(obj => {
+            return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+          }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
+            return sequence.then(() => {
+              return followingObjPromise;
+            }).then(objData => {
+              // console.log('obj data-', objData.bio)
+              dataObj.getFollowing().push(objData);
+
+              if (curIndex === followingArray.length - 1) {
+                console.log('All Done Following-', dataObj.getFollowing());
+              }
+            });
+          }, Promise.resolve());
+        });
+
+
+
+
+      Promise.resolve().then(() => {
+          return getFollow_ing_ers(userData.url + '/followers?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+        })
+        .then(followers => {
+          console.log('All fetched followers-', followers);
+          followers.map(obj => {
+            return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+          }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
+            return sequence.then(() => {
+              return followersObjPromise;
+            }).then(objData => {
+              //console.log('obj data-', objData.bio)
+              dataObj.getFollowers().push(objData);
+              if (curIndex === followerArray.length - 1) {
+                console.log('All Done Followers-', dataObj.getFollowers());
+              }
+            });
+          }, Promise.resolve());
+        });
+
+
       indicatorDiv.style.width = '25%';
       indicatorDiv.innerHTML = '25% wait...';
 
@@ -122,42 +198,42 @@ function getUserInfo(userName, dataObj) {
       indicatorDiv.style.width = '50%';
       indicatorDiv.innerHTML = '50% wait...';
 
-      // This code is done by following - https://developers.google.com/web/fundamentals/primers/promises#creating_a_sequence   
+      // This code is done by following - https://developers.google.com/web/fundamentals/primers/promises#creating_a_sequence
       // and  - https://medium.com/adobetech/how-to-combine-rest-api-calls-with-javascript-promises-in-node-js-or-openwhisk-d96cbc10f299
 
       // Good (data fetch time is high) Optimised solution see link - https://developers.google.com/web/fundamentals/primers/promises#creating_a_sequence
 
-/*
-      
-     var sequence = Promise.resolve();
-  
-     dataObj.getRepos().filter(repo => {
-      return repo.fork === false && repo.size !== 0
-    }).forEach((repo,currentIndex,repoArray)=>{
-      var indecatorValue = 50/repoArray.length;
-        let url = repo.commits_url.replace('{/sha}', '')+'?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
-         
-         sequence = sequence.then(()=>{
-          return getCommitPerRepos(url,null,repo,dataObj);
-         }).then(commits=>{
-          console.log(repo.name+'-'+currentIndex,' - commits count - ',commits);
-          indecatorValue*=currentIndex+1;
-          indicatorDiv.style.width = Number.parseFloat( 50+indecatorValue).toFixed(2) + '%';
-          indicatorDiv.innerHTML = Number.parseFloat( 50+indecatorValue).toFixed(2) + '% wait...';
-        
-          if(currentIndex === repoArray.length-1){
-            console.log('All Done-', dataObj.getCommitMap());
-             // All data fetching and mutating done now calculate the data for chart and generate chart
-          calculateDataAndGenerateChart(dataObj);
-          
-        }
-         });
-        
-      }) 
-*/
+      /*
+
+           var sequence = Promise.resolve();
+
+           dataObj.getRepos().filter(repo => {
+            return repo.fork === false && repo.size !== 0
+          }).forEach((repo,currentIndex,repoArray)=>{
+            var indecatorValue = 50/repoArray.length;
+              let url = repo.commits_url.replace('{/sha}', '')+'?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+
+               sequence = sequence.then(()=>{
+                return getCommitPerRepos(url,null,repo,dataObj);
+               }).then(commits=>{
+                console.log(repo.name+'-'+currentIndex,' - commits count - ',commits);
+                indecatorValue*=currentIndex+1;
+                indicatorDiv.style.width = Number.parseFloat( 50+indecatorValue).toFixed(2) + '%';
+                indicatorDiv.innerHTML = Number.parseFloat( 50+indecatorValue).toFixed(2) + '% wait...';
+
+                if(currentIndex === repoArray.length-1){
+                  console.log('All Done-', dataObj.getCommitMap());
+                   // All data fetching and mutating done now calculate the data for chart and generate chart
+                calculateDataAndGenerateChart(dataObj);
+
+              }
+               });
+
+            })
+      */
       // Better  (data fetch time is medium)  Optimised solution see link - https://developers.google.com/web/fundamentals/primers/promises#creating_a_sequence
 
-      /*      
+      /*
       dataObj.getRepos().filter(repo => {
         return repo.fork === false && repo.size !== 0
       }).reduce((sequence,repo,currentIndex,repoArray)=>{
@@ -168,27 +244,27 @@ function getUserInfo(userName, dataObj) {
       }).then(commits=>{
         console.log(repo.name+'-'+currentIndex,' - commits count - ',commits);
         //dataObj.getCommitMap().set(repo,commits);
-  
+
         indecatorValue*=currentIndex+1;
         indicatorDiv.style.width = Number.parseFloat( 50+indecatorValue).toFixed(2) + '%';
         indicatorDiv.innerHTML = Number.parseFloat( 50+indecatorValue).toFixed(2) + '% wait...';
-      
+
         if(currentIndex === repoArray.length-1){
           console.log('All Done-', dataObj.getCommitMap());
           //indicatorDiv.style.width = '75%';
           //indicatorDiv.innerHTML = '75% wait...';
           // All data fetching and mutating done now calculate the data for chart and generate chart
           calculateDataAndGenerateChart(dataObj);
-          
+
         }
       });
-    },Promise.resolve()); 
+    },Promise.resolve());
     */
 
 
 
       //  Best (data fetch time is low) Optimised solution see link - https://developers.google.com/web/fundamentals/primers/promises#creating_a_sequence
-    
+
       dataObj.getRepos().filter(repo => {
         return repo.fork === false && repo.size !== 0
       }).map((repo) => {
@@ -199,7 +275,7 @@ function getUserInfo(userName, dataObj) {
         return sequence.then(() => {
           return commitPromise;
         }).then(commits => {
-         // console.log(currentIndex, ' - commits count - ', commits);
+          // console.log(currentIndex, ' - commits count - ', commits);
 
           indecatorValue *= currentIndex + 1;
           indicatorDiv.style.width = Number.parseFloat(50 + indecatorValue).toFixed(2) + '%';
@@ -212,15 +288,16 @@ function getUserInfo(userName, dataObj) {
           }
         });
       }, Promise.resolve());
-      
+
 
       if (dataObj.getRepos().filter(repo => {
-        return repo.fork === false && repo.size !== 0
-      }).length === 0) {
+          return repo.fork === false && repo.size !== 0
+        }).length === 0) {
+
         calculateDataAndGenerateChart(dataObj);
         checkRateLimit();
       }
-      
+
 
     }).catch(err => {
       console.log(err)
@@ -249,14 +326,73 @@ function buildUserDetails(user) {
                     <li class="list-group-item"><i class="fa fa-fw fa-database"></i> ${user.public_repos} public repos <p><small>(Own Repos- ${user.ownRepos ? user.ownRepos : '0'}, Forked- ${user.forkedRepos})</small></p> </li>
                     <li class="list-group-item"><i class="fa fa-fw fa-clock-o"></i>Joined GitHub ${year} Year Ago  </li>
                     <li class="list-group-item"><i class="fa fa-fw fa-envelope"></i> ${user.email ? user.email : ''}  </li>
-                    <li class="list-group-item"><i class="fa fa-fw fa-external-link"></i> <a href="${user.html_url}" target="_blank">View Profile On GitHub</a>   </li>
+                    <li class="list-group-item"><i class="fa fa-fw fa-external-link"></i> <a href="${user.html_url}" target="_blank"  rel="noopener">View Profile On GitHub</a>   </li>
                     </ul>`;
   document.getElementById('userDetail').innerHTML = output;
 }
 
+function buildFollow_ing_ers_card(dataObj) {
+
+  if (dataObj.getFollowers().length != 0) {
+    document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+    let targetDiv = document.querySelector('#followersDiv .gridFollowers');
+    dataObj.getFollowers().forEach(obj => {
+      let output = ` <div class="grid-item">
+    <div class="card" style="width: 10rem;">
+  <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
+  <div class="card-body">
+    <h6 class="card-title">${obj.name} <small>(${obj.login})</small></h6>
+    <p><span style="float:left"><a href="https://alamnr.github.io/profile.html?user=${obj.login}" target="_blank"  rel="noopener"><small>Summary</small></a>
+    </span><span style="float:right"><a href="https://github.com/${obj.login}" target="_blank"  rel="noopener"><small>Account</small></a></span></p>
+
+  </div>
+</div>
+    </div>`;
+      let divToAppend = document.createRange().createContextualFragment(output);
+      targetDiv.appendChild(divToAppend);
+    })
+    var msnryFollowers = new Masonry( '.gridFollowers', {
+      // options
+      itemSelector: '.grid-item',
+      columnWidth: 25
+    });
+  }
+
+  if (dataObj.getFollowing().length != 0) {
+
+    document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+    let targetDiv = document.querySelector('#followingDiv .gridFollowing');
+    dataObj.getFollowing().forEach(obj => {
+      let output = ` <div class="grid-item">
+		<div class="card" style="width: 10rem;">
+  <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
+  <div class="card-body">
+    <h6 class="card-title">${obj.name} <small>(${obj.login})</small></h6>
+    <p><span style="float:left"><a href="https://alamnr.github.io/profile.html?user=${obj.login}" target="_blank"  rel="noopener"><small>Summary</small></a>
+    </span><span style="float:right"><a href="https://github.com/${obj.login}" target="_blank"  rel="noopener"><small>Account</small></a></span></p>
+
+  </div>
+</div>
+		</div>`;
+      let divToAppend = document.createRange().createContextualFragment(output);
+      targetDiv.appendChild(divToAppend);
+    })
+    var msnryFolowing = new Masonry( '.gridFollowing', {
+      // options
+      itemSelector: '.grid-item',
+      columnWidth: 25
+    });
+  }
+
+
+
+
+
+}
+
 
 function calculateDataAndGenerateChart(dataObj) {
-  // calculate quarter commit count 
+  // calculate quarter commit count
   var then = new Date(dataObj.getUser().created_at);
 
   var today = new Date();
@@ -281,13 +417,13 @@ function calculateDataAndGenerateChart(dataObj) {
 
   if (unforkRepo.length === 0) {
     buildUserDetails(dataObj.getUser());
+    buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
 
     document.querySelector('#indicator').style.width = '100%';
     document.querySelector('#indicator').innerHTML = '100% Done!';
     setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
-  }
-  else {
+  } else {
 
     unforkRepo.forEach((myRepo, index, repoArray) => {
 
@@ -320,6 +456,7 @@ function calculateDataAndGenerateChart(dataObj) {
     // Generate Chart
 
     buildUserDetails(dataObj.getUser());
+    buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
     createDoughnutChart('langRepoCount', dataObj);
 
@@ -352,7 +489,7 @@ function calculateDataAndGenerateChart(dataObj) {
         var top10SortedRepoCommitCount = new Map([...dataObj.getRepoCommitCount().entries()].sort((a, b) => b[1] - a[1]));
         var top10SortedRepoCommitCountDescription = new Map();
         var j = 0;
-        top10SortedRepoCommitCount.forEach(function (value, key, map) {
+        top10SortedRepoCommitCount.forEach(function(value, key, map) {
           j++;
           if (j > 10) {
             map.delete(key);
@@ -362,7 +499,7 @@ function calculateDataAndGenerateChart(dataObj) {
           }
         })
         // console.log(top10SortedRepoCommitCount);
-        top10SortedRepoCommitCount.forEach(function (value, key, map) {
+        top10SortedRepoCommitCount.forEach(function(value, key, map) {
           top10SortedRepoCommitCountDescription.set(key, dataObj.getRepoCommitCountDescriptions().get(key));
         })
         dataObj.setRepoCommitCountDescriptions(top10SortedRepoCommitCountDescription);
@@ -391,7 +528,7 @@ function calculateDataAndGenerateChart(dataObj) {
         var top10SortedRepoStarCount = new Map([...dataObj.getRepoStarCount().entries()].sort((a, b) => b[1] - a[1]));
         var top10SortedRepoStarCountDescription = new Map();
         var j = 0;
-        top10SortedRepoStarCount.forEach(function (value, key, map) {
+        top10SortedRepoStarCount.forEach(function(value, key, map) {
           j++;
           if (j > 10) {
             map.delete(key);
@@ -401,7 +538,7 @@ function calculateDataAndGenerateChart(dataObj) {
           }
         })
         // console.log(top10SortedRepoStarCount);
-        top10SortedRepoStarCount.forEach(function (value, key, map) {
+        top10SortedRepoStarCount.forEach(function(value, key, map) {
           top10SortedRepoStarCountDescription.set(key, dataObj.getRepoStarCountDescriptions().get(key));
         })
         dataObj.setRepoStarCountDescriptions(top10SortedRepoStarCountDescription);
@@ -495,73 +632,81 @@ function createDataObject() {
   var repoStarCountDescriptions = new Map();
   var user;
   var repos;
+  var following = [];
+  var followers = [];
   var commitMap = new Map();
   var dataObject = {
-    getCommitMap: function () {
+    getCommitMap: function() {
       return commitMap;
     },
-    setCommitMap: function (commitMapN) {
+    setCommitMap: function(commitMapN) {
       commitMap = commitMapN;
     },
-    getQuarterCommitCount: function () {
+    getQuarterCommitCount: function() {
       return quarterCommitCount;
     },
-    setQuarterCommitCount: function (quarterCommitCountMap) {
+    setQuarterCommitCount: function(quarterCommitCountMap) {
       quarterCommitCount = quarterCommitCountMap;
     },
-    getLangRepoCount: function () {
+    getLangRepoCount: function() {
       return langRepoCount;
     },
-    setLangRepoCount: function (langRepoCountMap) {
+    setLangRepoCount: function(langRepoCountMap) {
       langRepoCount = langRepoCountMap;
     },
-    getLangStarCount: function () {
+    getLangStarCount: function() {
       return langStarCount;
     },
-    setLangStarCount: function (langStarCountMap) {
+    setLangStarCount: function(langStarCountMap) {
       langStarCount = langStarCountMap;
     },
-    getLangCommitCount: function () {
+    getLangCommitCount: function() {
       return langCommitCount;
     },
-    setLangCommitCount: function (langCommitCountMap) {
+    setLangCommitCount: function(langCommitCountMap) {
       langCommitCount = langCommitCountMap;
     },
-    getRepoCommitCount: function () {
+    getRepoCommitCount: function() {
       return repoCommitCount;
     },
-    setRepoCommitCount: function (repoCommitCountMap) {
+    setRepoCommitCount: function(repoCommitCountMap) {
       repoCommitCount = repoCommitCountMap;
     },
-    getRepoStarCount: function () {
+    getRepoStarCount: function() {
       return repoStarCount;
     },
-    setRepoStarCount: function (repoStarCountMap) {
+    setRepoStarCount: function(repoStarCountMap) {
       repoStarCount = repoStarCountMap;
     },
-    getRepoCommitCountDescriptions: function () {
+    getRepoCommitCountDescriptions: function() {
       return repoCommitCountDescriptions;
     },
-    setRepoCommitCountDescriptions: function (repoCommitCountDescriptionsMap) {
+    setRepoCommitCountDescriptions: function(repoCommitCountDescriptionsMap) {
       repoCommitCountDescriptions = repoCommitCountDescriptionsMap;
     },
-    getRepoStarCountDescriptions: function () {
+    getRepoStarCountDescriptions: function() {
       return repoStarCountDescriptions;
     },
-    setRepoStarCountDescriptions: function (repoStarCountDescriptionsMap) {
+    setRepoStarCountDescriptions: function(repoStarCountDescriptionsMap) {
       repoStarCountDescriptions = repoStarCountDescriptionsMap
     },
-    getUser: function () {
+    getUser: function() {
       return user;
     },
-    setUser: function (userObj) {
+    setUser: function(userObj) {
       user = userObj;
     },
-    getRepos: function () {
+    getRepos: function() {
       return repos;
     },
-    setRepos: function (repoArray) {
+    setRepos: function(repoArray) {
       repos = repoArray;
+    },
+    getFollowing: function() {
+      return following;
+    },
+    getFollowers: function() {
+      return followers;
     }
 
   };
@@ -570,13 +715,13 @@ function createDataObject() {
 
 
 
-function checkRateLimit(){
+function checkRateLimit() {
   let url = 'https://api.github.com/rate_limit?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
-  getJSON(url).then(rateData=>{
+  getJSON(url).then(rateData => {
     //console.log(rateData);
-    document.querySelector(".rate-limit").classList.toggle("rate-limited",  rateData.rate.remaining === "0");
+    document.querySelector(".rate-limit").classList.toggle("rate-limited", rateData.rate.remaining === "0");
     document.getElementById("rate-limit-count").innerHTML = rateData.rate.remaining;
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err);
   });
 
@@ -584,12 +729,20 @@ function checkRateLimit(){
 
 
 // Google Analytics
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[])
-      .push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0]; 
-      a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+(function(i, s, o, g, r, a, m) {
+  i['GoogleAnalyticsObject'] = r;
+  i[r] = i[r] || function() {
+    (i[r].q = i[r].q || [])
+    .push(arguments)
+  }, i[r].l = 1 * new Date();
+  a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+  a.async = 1;
+  a.src = g;
+  m.parentNode.insertBefore(a, m)
+})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-      ga('create', 'UA-121404954-1', 'auto');
-      ga('send', 'pageview');
+ga('create', 'UA-121404954-1', 'auto');
+ga('send', 'pageview');
 
 
 // Service worker Code
@@ -598,14 +751,13 @@ function checkRateLimit(){
 if (!('serviceWorker' in navigator)) {
   console.log('Service worker not supported');
   //return;
-}
-else{
-  if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/service-worker.js')
-  .then(registration=>{
-    console.log('Registration successfull, scope is: ',registration.scope);
-  }).catch(error=>{
-    console.log('Service worker registration failed, error: ',error);
-  })
-}  
+} else {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('Registration successfull, scope is: ', registration.scope);
+      }).catch(error => {
+        console.log('Service worker registration failed, error: ', error);
+      })
+  }
 }

@@ -13,7 +13,7 @@
     <!--<meta property="og:url" content="https://alamnr.github.io/" />
     <meta property="og:site_name" content="Github Profile Summary" />-->
 
-  
+
   <!-- Set the viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <meta name="Description" content="github profile summary pwa service worker manifest promise API">
@@ -59,6 +59,8 @@
     <link rel="stylesheet" href="css/style.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <!--<script src="js/app.js"></script>-->
     <script src="js/new_git_promise.js"></script>
     <script src="js/chart-1.js"></script>
@@ -157,9 +159,43 @@
 
 
     </section>
+    <br><hr>
+    <section id="following">
+        <div class="container">
+            <div class="row">
+                <div id="followingDiv" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <h4 class="text-center">Following:</h4>
+                    <!-- <div  class="grid" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 20 }'> -->
+                    <div  class="gridFollowing">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </section>
 
     <br><hr>
-    <footer><div class="fixed-bottom-custom"><div>GitHub profile summary is built with <span class="highlight">Vanilla Javascript </span>  and <a href="http://www.chartjs.org/docs/latest/" target="_blank"  rel="noopener">chart.js</a> (visualization). Sources on <a target="_blank"  rel="noopener" href="https://github.com/alamnr/alamnr.github.io"> GitHub.</a></div><div> Inspired by <a href="https://profile-summary-for-github.com" target="_blank"  rel="noopener">profile-summary-for-github</a></div></div></footer>
+
+    <section id="followers">
+        <div class="container">
+            <div class="row">
+                <div id="followersDiv" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <h4 class="text-center">Followers:</h4>
+                    <!-- <div  class="grid" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 20 }'> -->
+                    <div  class="gridFollowers">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </section>
+
+    <br><hr>
+    <footer><div class="fixed-bottom-custom"><div>GitHub profile summary is built with <span class="highlight">Vanilla Javascript </span>,<a href="https://masonry.desandro.com" target="_blank"  rel="noopener">masonry.js</a>  and <a href="http://www.chartjs.org/docs/latest/" target="_blank"  rel="noopener">chart.js</a> (visualization). Sources on <a target="_blank"  rel="noopener" href="https://github.com/alamnr/alamnr.github.io"> GitHub.</a></div><div> Inspired by <a href="https://profile-summary-for-github.com" target="_blank"  rel="noopener">profile-summary-for-github</a></div></div></footer>
 
     <span class="rate-limit">
         <span class="msg">The app is currently rate-limited<br>Please check back later</span>
