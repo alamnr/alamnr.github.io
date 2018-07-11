@@ -238,7 +238,7 @@ function getUserInfo(userName, dataObj) {
 
           if (currentIndex === repoArray.length - 1) {
             console.log('All Done-', dataObj.getCommitMap());
-            fetchFollowing_n_Followers(dataObj);  
+            fetchFollowing_n_Followers(dataObj);
             calculateDataAndGenerateChart(dataObj);
             checkRateLimit();
           }
@@ -320,9 +320,7 @@ function fetchFollowing_n_Followers(dataObj){
                   console.log('All Done Followers-', dataObj.getFollowers());
                   buildFollow_ing_ers_card(dataObj);
 
-                  document.querySelector('#indicator').style.width = '100%';
-                  document.querySelector('#indicator').innerHTML = '100% Done!';
-                  setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
+
                 }
               });
             }, Promise.resolve());
@@ -408,7 +406,9 @@ function buildFollow_ing_ers_card(dataObj) {
   }
 
 
-
+  document.querySelector('#indicator').style.width = '100%';
+  document.querySelector('#indicator').innerHTML = '100% Done!';
+  setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
 
 
 }
@@ -572,9 +572,9 @@ function calculateDataAndGenerateChart(dataObj) {
 
     setShareButtonHref(dataObj.getUser());
 
-    document.querySelector('#indicator').style.width = '100%';
-    document.querySelector('#indicator').innerHTML = '100% Done!';
-    setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
+    // document.querySelector('#indicator').style.width = '100%';
+    // document.querySelector('#indicator').innerHTML = '100% Done!';
+    // setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
 
   }
 }
