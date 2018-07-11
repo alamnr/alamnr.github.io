@@ -14,8 +14,8 @@
     'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js',
     'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js',
     'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'
-    
-  
+
+
   ];
 
 
@@ -24,7 +24,7 @@ var staticCacheName = 'pages-cache-v1';
 // Service worker events- install, activate, fetch,push and sync
 
 self.addEventListener('install',event=>{
-	console.log('Attempting to install service worker and cache static assets');
+//	console.log('Attempting to install service worker and cache static assets');
 	//self.skipWaiting();
 	event.waitUntil(caches.open(staticCacheName)
 		.then(cache=>cache.addAll(filesToCache)));
@@ -33,7 +33,7 @@ self.addEventListener('install',event=>{
 
 // TODO 7 - activate and delete unused caches
 self.addEventListener('activate',event=>{
-	console.log('Activating new service worker...');
+//	console.log('Activating new service worker...');
 	var cacheWhiteList = [staticCacheName];
 	event.waitUntil(caches.keys().then(cacheNames=>{
 		return Promise.all(cacheNames.map(cacheName=>{
@@ -57,10 +57,10 @@ self.addEventListener('fetch',event=>{
 		event.respondWith(
 			caches.match(event.request).then(response=>{
 				if (response) {
-			        console.log('Found ', event.request.url, ' in cache');
+			        //console.log('Found ', event.request.url, ' in cache');
 			        return response;
 			    }
-			    console.log('Network Request For- ',event.request.url);
+			    //console.log('Network Request For- ',event.request.url);
 			    return fetch(event.request).then(response=>{
 			    	// TODO 4 - Add fetched files to the cache
 			          if(response.status === 404){
@@ -74,14 +74,14 @@ self.addEventListener('fetch',event=>{
 			          })
 			    })
 			}).catch(error=>{
-	  
+
 	        // TODO 6 - Respond with custom offline page
 	        console.log('Error, ', error);
 	        //return caches.match('pages/offline.html');
-	  
+
 	      })
-		);	
-	}  	
+		);
+	}
 });
 
 })();

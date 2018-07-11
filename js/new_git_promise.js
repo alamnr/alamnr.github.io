@@ -69,7 +69,7 @@ function getFollow_ing_ers(url, follow_ing_ers) {
       follow_ing_ers = [];
     }
     follow_ing_ers = follow_ing_ers.concat(response.data);
-    console.log(follow_ing_ers.length + " follow_ing_ers so far");
+    //console.log(follow_ing_ers.length + " follow_ing_ers so far");
     //console.log("repos- ",response);
     if (response.linkData) {
       if (parse_link_header(response.linkData).next) {
@@ -142,7 +142,7 @@ function getUserInfo(userName, dataObj) {
           return getFollow_ing_ers(userData.url + '/following?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
         })
         .then(following => {
-          console.log('All fetched following-', following);
+          //console.log('All fetched following-', following);
           following.map(obj => {
             return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
           }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
@@ -154,6 +154,7 @@ function getUserInfo(userName, dataObj) {
 
               if (curIndex === followingArray.length - 1) {
                 console.log('All Done Following-', dataObj.getFollowing());
+                buildFollow_ing_ers_card(dataObj);
               }
             });
           }, Promise.resolve());
@@ -166,7 +167,7 @@ function getUserInfo(userName, dataObj) {
           return getFollow_ing_ers(userData.url + '/followers?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
         })
         .then(followers => {
-          console.log('All fetched followers-', followers);
+        //  console.log('All fetched followers-', followers);
           followers.map(obj => {
             return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
           }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
@@ -177,6 +178,7 @@ function getUserInfo(userName, dataObj) {
               dataObj.getFollowers().push(objData);
               if (curIndex === followerArray.length - 1) {
                 console.log('All Done Followers-', dataObj.getFollowers());
+                buildFollow_ing_ers_card(dataObj);
               }
             });
           }, Promise.resolve());
@@ -417,7 +419,7 @@ function calculateDataAndGenerateChart(dataObj) {
 
   if (unforkRepo.length === 0) {
     buildUserDetails(dataObj.getUser());
-    buildFollow_ing_ers_card(dataObj);
+    //buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
 
     document.querySelector('#indicator').style.width = '100%';
@@ -456,7 +458,7 @@ function calculateDataAndGenerateChart(dataObj) {
     // Generate Chart
 
     buildUserDetails(dataObj.getUser());
-    buildFollow_ing_ers_card(dataObj);
+    //buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
     createDoughnutChart('langRepoCount', dataObj);
 
