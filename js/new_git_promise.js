@@ -729,7 +729,7 @@ function createDataObject() {
     getFollowers: function() {
       return followers;
     },
-    setFollowers():function(emptyArray) {
+    setFollowers:function(emptyArray) {
         followers = emptyArray;
       }
 
