@@ -289,7 +289,7 @@ function fetchFollowing_n_Followers(dataObj){
 
                 if (curIndex === followingArray.length - 1) {
                   console.log('All Done Following-', dataObj.getFollowing());
-                  buildFollow_ing_ers_card(dataObj);
+                  buildFollowing_card(dataObj);
                 }
               });
             }, Promise.resolve());
@@ -318,7 +318,7 @@ function fetchFollowing_n_Followers(dataObj){
                 dataObj.getFollowers().push(objData);
                 if (curIndex === followerArray.length - 1) {
                   console.log('All Done Followers-', dataObj.getFollowers());
-                  buildFollow_ing_ers_card(dataObj);
+                  buildFollowers_card(dataObj);
                   document.querySelector('#indicator').style.width = '100%';
                   document.querySelector('#indicator').innerHTML = '100% Done!';
                   setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
@@ -351,37 +351,11 @@ function buildUserDetails(user) {
   document.getElementById('userDetail').innerHTML = output;
 }
 
-function buildFollow_ing_ers_card(dataObj) {
+function buildFollowing_card(dataObj) {
 
-  document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
   document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
-    let followersDiv = document.querySelector('#followersDiv .gridFollowers');
+
     let followingDiv = document.querySelector('#followingDiv .gridFollowing');
-  if (dataObj.getFollowers().length != 0 ) {
-
-
-    dataObj.getFollowers().forEach(obj => {
-      let output = ` <div class="grid-item">
-    <div class="card" style="width: 10rem;">
-  <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
-  <div class="card-body">
-    <h6 class="card-title">${obj.name?obj.name:''} <small>(${obj.login})</small></h6>
-    <p><span style="float:left"><a href="https://alamnr.github.io/profile.html?user=${obj.login}" target="_blank"  rel="noopener"><small>Summary</small></a>
-    </span><span style="float:right"><a href="https://github.com/${obj.login}" target="_blank"  rel="noopener"><small>Account</small></a></span></p>
-
-  </div>
-</div>
-    </div>`;
-      let divToAppend = document.createRange().createContextualFragment(output);
-      followersDiv.appendChild(divToAppend);
-    })
-    var msnryFollowers = new Masonry( '.gridFollowers', {
-      // options
-      itemSelector: '.grid-item',
-      columnWidth: 25
-    });
-    dataObj.setFollowers([]);
-  }
 
   if (dataObj.getFollowing().length != 0 ) {
 
@@ -405,8 +379,42 @@ function buildFollow_ing_ers_card(dataObj) {
       itemSelector: '.grid-item',
       columnWidth: 25
     });
-    dataObj.setFollowing([]);
+
   }
+
+}
+function buildFollowers_card(dataObj) {
+
+  document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+
+    let followersDiv = document.querySelector('#followersDiv .gridFollowers');
+
+  if (dataObj.getFollowers().length != 0 ) {
+
+
+    dataObj.getFollowers().forEach(obj => {
+      let output = ` <div class="grid-item">
+    <div class="card" style="width: 10rem;">
+  <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
+  <div class="card-body">
+    <h6 class="card-title">${obj.name?obj.name:''} <small>(${obj.login})</small></h6>
+    <p><span style="float:left"><a href="https://alamnr.github.io/profile.html?user=${obj.login}" target="_blank"  rel="noopener"><small>Summary</small></a>
+    </span><span style="float:right"><a href="https://github.com/${obj.login}" target="_blank"  rel="noopener"><small>Account</small></a></span></p>
+
+  </div>
+</div>
+    </div>`;
+      let divToAppend = document.createRange().createContextualFragment(output);
+      followersDiv.appendChild(divToAppend);
+    })
+    var msnryFollowers = new Masonry( '.gridFollowers', {
+      // options
+      itemSelector: '.grid-item',
+      columnWidth: 25
+    });
+
+  }
+
 
 }
 
