@@ -159,6 +159,12 @@
           document.getElementById('errMsg').innerHTML = 'User Not Found';
           document.getElementById('errMsg').style.color = 'red';
         }
+        if (this.readyState == 4 && this.status == 403) {
+          var response = JSON.parse(this.responseText);
+          //console.log(response.message);
+          document.getElementById('errMsg').innerHTML = response.message;
+          document.getElementById('errMsg').style.color = 'red';
+        }
         checkRateLimit();
       }
 
