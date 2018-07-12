@@ -57,6 +57,7 @@
 
     <link rel="stylesheet" href="css/social-boot.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modal.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 
@@ -202,7 +203,15 @@
         <span class="count"><span id="rate-limit-count"></span> requests left <br> before rate-limit</span>
     </span>
 
+    <!-- Loading Modal -->
 
+      <div class="container" id="modal">
+      	<div class="row">
+      	      <div class="animationload">
+                  <div class="osahanloading"></div>
+              </div>
+      	</div>
+    </div>
     <script>
         var urlParams;
 
@@ -226,6 +235,7 @@
                 document.body.setAttribute('data-user-id',urlParams['user']);
                 var data = createDataObject();
                 getUserInfo(urlParams['user'], data);
+                document.querySelector('#modal .animationload').style.display = 'block';
             }
             else{
 				window.location.replace(window.location.href.substring(0,window.location.href.lastIndexOf('/')+1)+'index.html');

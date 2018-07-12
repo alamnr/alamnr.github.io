@@ -278,16 +278,12 @@ function getUserInfo(userName, dataObj) {
     })
 }
 
-function fetchFollowing_n_Followers(dataObj,url){
+function fetchFollowing_n_Followers(dataObj){
 
         Promise.resolve().then(() => {
-            if(url && url.indexOf('following') !==-1){
-              dataObj.setFollowing([]);
-              return getFollow_ing_ers(url);
-            }
-            else{
+
               return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-            }
+
 
           })
           .then(followingObj => {
@@ -303,17 +299,23 @@ function fetchFollowing_n_Followers(dataObj,url){
               }).then(objData => {
 
                 indecatorValue *= curIndex + 1;
-                if(!url){
+
                   document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
                   document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
-                }
+
 
                 // console.log('obj data-', objData.bio)
                 dataObj.getFollowing().push(objData);
 
                 if (curIndex === followingArray.length - 1) {
                   console.log('All Done Following-', dataObj.getFollowing());
-                  buildFollowing_card(dataObj,followingObj);
+                  buildFollowing_card(dataObj.getFollowing(),followingObj);
+                  document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
+                    e.preventDefault();
+                    //console.log('clicked-',e.target.href);
+                    loadPagingData(e.target.href);
+                  })});
+
                 }
               });
             }, Promise.resolve());
@@ -323,13 +325,9 @@ function fetchFollowing_n_Followers(dataObj,url){
 
 
         Promise.resolve().then(() => {
-            if(url && url.indexOf('followers') !==-1){
-              dataObj.setFollowers([]);
-              return getFollow_ing_ers(url);
-            }
-            else{
+
               return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-            }
+
           })
           .then(followersObj => {
           //  console.log('All fetched followers-', followers);
@@ -345,22 +343,73 @@ function fetchFollowing_n_Followers(dataObj,url){
               }).then(objData => {
 
                 indecatorValue *= curIndex + 1;
-                if(!url){
+
                   document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
                   document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
-                }
+
 
                 //console.log('obj data-', objData.bio)
                 dataObj.getFollowers().push(objData);
                 if (curIndex === followerArray.length - 1) {
                   console.log('All Done Followers-', dataObj.getFollowers());
-                  buildFollowers_card(dataObj,followersObj);
+                  buildFollowers_card(dataObj.getFollowers(),followersObj);
+                  document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
+                    e.preventDefault();
+
+                    //console.log('clicked-',e.target.href);
+                    loadPagingData(e.target.href);
+                  })});
 
                 }
               });
             }, Promise.resolve());
           });
 
+}
+
+function loadPagingData(url){
+  document.querySelector('#modal .animationload').style.display = 'block';
+	var followArray=[];
+  Promise.resolve().then(() => {
+
+              return getFollow_ing_ers(url);
+
+          })
+          .then(followersObj => {
+
+
+            followersObj.followArray.map(obj => {
+              return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+            }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
+
+              return sequence.then(() => {
+                return followersObjPromise;
+              }).then(objData => {
+
+
+
+                followArray.push(objData);
+                if (curIndex === followerArray.length - 1) {
+                  console.log('All Done Followers-', followArray);
+				  if(url && url.indexOf('following') !==-1){
+					buildFollowing_card(followArray,followersObj,url);
+				  }
+				  else{
+					buildFollowers_card(followArray,followersObj,url);
+				  }
+          document.querySelector('#modal .animationload').style.display = 'none';
+
+				  document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
+                    e.preventDefault();
+                    //console.log('clicked-',e.target.href);
+                    loadPagingData(e.target.href);
+                  })});
+
+                }
+              });
+            }, Promise.resolve());
+          });
+          checkRateLimit();
 }
 
 function buildUserDetails(user) {
@@ -384,25 +433,34 @@ function buildUserDetails(user) {
   document.getElementById('userDetail').innerHTML = output;
 }
 
-function buildFollowing_card(dataObj,followingObj,url) {
+function buildFollowing_card(followingArray,followingObj,url) {
   if(url){
-    document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv').lasttChild);
+    //document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv').lastElementChild);
+    document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv h4').nextElementSibling);
     document.querySelector('#followingDiv .gridFollowing').innerHTML  = '';
   }
-  if(followingObj.last){
+  else{
+    if(document.querySelector('#followingDiv nav')){
+      document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv nav'));
+    }
+  }
+  if(followingObj.last && !url){
     var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
     document.querySelector('#followingDiv h4').innerText = 'Following ('+100*lastPageNo+') :';
 
   }
   else{
-    document.querySelector('#followingDiv h4').innerText = 'Following ('+dataObj.getFollowing().length+') :';
+    if(!url){
+        document.querySelector('#followingDiv h4').innerText = 'Following ('+followingArray.length+') :';
+    }
+
   }
 
     let followingDiv = document.querySelector('#followingDiv .gridFollowing');
 
-  if (dataObj.getFollowing().length != 0 ) {
+  if (followingArray.length != 0 ) {
 
-    dataObj.getFollowing().forEach(obj => {
+    followingArray.forEach(obj => {
       let output = ` <div class="grid-item">
 		<div class="card" style="width: 10rem;">
   <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
@@ -428,40 +486,51 @@ function buildFollowing_card(dataObj,followingObj,url) {
                   <ul class="pagination justify-content-center">
 
                     <li class="page-item ${followingObj.first?'':'disabled'} ">
-                    <a class="page-link" href="#" ${followingObj.first?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.first})'>First</a>
+                    <a class="page-link" href="${followingObj.first}" ${followingObj.first?'':'tabindex="-1"'}  >First</a>
                     </li>
-                    <li class="page-item ${followingObj.prev?'':'disabled'}"><a class="page-link" href="#" ${followingObj.first?'':'tabindex="-1"'} onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.prev})'>Previous</a></li>
-                    <li class="page-item ${followingObj.next?'':'disabled'}"><a class="page-link" href="#" ${followingObj.next?'':'tabindex="-1"'} onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.next})'>Next</a></li>
-                    <li class="page-item ${followingObj.last?'':'disabled'}"><a class="page-link" href="#" ${followingObj.last?'':'tabindex="-1"'} onClick='fetchFollowing_n_Followers(${dataObj},${followingObj.last})'>Last</a></li>
+                    <li class="page-item ${followingObj.prev?'':'disabled'}"><a class="page-link" href="${followingObj.prev}" ${followingObj.prev?'':'tabindex="-1"'} >Previous</a></li>
+                    <li class="page-item ${followingObj.next?'':'disabled'}"><a class="page-link" href="${followingObj.next}" ${followingObj.next?'':'tabindex="-1"'} >Next</a></li>
+                    <li class="page-item ${followingObj.last?'':'disabled'}"><a class="page-link" href="${followingObj.last}" ${followingObj.last?'':'tabindex="-1"'} >Last</a></li>
 
                   </ul>
                 </nav>
                   `;
-                  document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
+                  //document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
+                  document.querySelector('#followersDiv h4').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#followersDiv h4').nextElementSibling);
   }
 
 }
-function buildFollowers_card(dataObj,followersObj,url) {
+function buildFollowers_card(followersArray,followersObj,url) {
   if(url){
-    document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv').lasttChild);
+    //document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv').lastElementChild);
+    document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv h4').nextElementSibling);
+
     document.querySelector('#followersDiv .gridFollowers').innerHTML  = '';
   }
+  else{
+    if(document.querySelector('#followersDiv nav')){
+      document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv nav'));
+    }
+  }
 
-  if(followersObj.last){
+  if(followersObj.last && !url){
     var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=')+5,followersObj.last.length));
     document.querySelector('#followersDiv h4').innerText = 'Followers ('+100*lastPageNo+') :';
 
   }
   else{
-    document.querySelector('#followersDiv h4').innerText = 'Followers ('+dataObj.getFollowers().length+') :';
+    if(!url){
+        document.querySelector('#followersDiv h4').innerText = 'Followers ('+followersArray.length+') :';
+    }
+
   }
 
     let followersDiv = document.querySelector('#followersDiv .gridFollowers');
 
-  if (dataObj.getFollowers().length != 0 ) {
+  if (followersArray.length != 0 ) {
 
 
-    dataObj.getFollowers().forEach(obj => {
+    followersArray.forEach(obj => {
       let output = ` <div class="grid-item">
     <div class="card" style="width: 10rem;">
   <img class="card-img-top" src="${obj.avatar_url}" alt="${obj.login}" height="100" width="100">
@@ -486,26 +555,31 @@ function buildFollowers_card(dataObj,followersObj,url) {
       <ul class="pagination justify-content-center">
 
         <li class="page-item ${followersObj.first?'':'disabled'} ">
-        <a class="page-link" href="#" ${followersObj.first?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.first})'>First</a>
+        <a class="page-link" href="${followersObj.first}" ${followersObj.first?'':'tabindex="-1"'}>First</a>
         </li>
-        <li class="page-item ${followersObj.prev?'':'disabled'}"><a class="page-link" href="#" ${followersObj.first?'':'tabindex="-1"'}   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.prev})'>Previous</a></li>
-        <li class="page-item ${followersObj.next?'':'disabled'}"><a class="page-link" href="#" ${followersObj.next?'':'tabindex="-1"'}   onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.next})'>Next</a></li>
-        <li class="page-item ${followersObj.last?'':'disabled'}"><a class="page-link" href="#" ${followersObj.last?'':'tabindex="-1"'}  onClick='fetchFollowing_n_Followers(${dataObj},${followersObj.last})'>Last</a></li>
+        <li class="page-item ${followersObj.prev?'':'disabled'}"><a class="page-link" href="${followersObj.first}" ${followersObj.first?'':'tabindex="-1"'}>Previous</a></li>
+        <li class="page-item ${followersObj.next?'':'disabled'}"><a class="page-link" href="${followersObj.next}" ${followersObj.next?'':'tabindex="-1"'}>Next</a></li>
+        <li class="page-item ${followersObj.last?'':'disabled'}"><a class="page-link" href="${followersObj.last}" ${followersObj.last?'':'tabindex="-1"'}>Last</a></li>
 
       </ul>
     </nav>
                   `;
-                  document.querySelector('#followersDiv').appendChild(document.createRange().createContextualFragment(paging));
+                  //document.querySelector('#followersDiv').appendChild(document.createRange().createContextualFragment(paging));
+                  document.querySelector('#followersDiv h4').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#followersDiv h4').nextElementSibling);
+                  //console.log('you call me -',url);
   }
   if(!url){
     document.querySelector('#indicator').style.width = '100%';
     document.querySelector('#indicator').innerHTML = '100% Done!';
-    setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 2000);
+    setTimeout(() => {
+      document.querySelector('.progress').style.visibility = 'hidden';
+      document.querySelector('#modal .animationload').style.display = 'none';
+    }, 2000);
+
   }
 
 
 }
-
 
 function calculateDataAndGenerateChart(dataObj) {
   // calculate quarter commit count
