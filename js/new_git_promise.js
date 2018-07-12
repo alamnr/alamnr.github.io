@@ -439,11 +439,7 @@ function buildFollowing_card(followingArray,followingObj,url) {
     document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv h4').nextElementSibling);
     document.querySelector('#followingDiv .gridFollowing').innerHTML  = '';
   }
-  else{
-    if(document.querySelector('#followingDiv nav')){
-      document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv nav'));
-    }
-  }
+  
   if(followingObj.last && !url){
     var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
     document.querySelector('#followingDiv h4').innerText = 'Following ('+100*lastPageNo+') :';
@@ -496,7 +492,7 @@ function buildFollowing_card(followingArray,followingObj,url) {
                 </nav>
                   `;
                   //document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
-                  document.querySelector('#followersDiv h4').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#followersDiv h4').nextElementSibling);
+                  document.querySelector('#followingDiv h4').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#followingDiv h4').nextElementSibling);
   }
 
 }
@@ -507,11 +503,7 @@ function buildFollowers_card(followersArray,followersObj,url) {
 
     document.querySelector('#followersDiv .gridFollowers').innerHTML  = '';
   }
-  else{
-    if(document.querySelector('#followersDiv nav')){
-      document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv nav'));
-    }
-  }
+
 
   if(followersObj.last && !url){
     var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=')+5,followersObj.last.length));
