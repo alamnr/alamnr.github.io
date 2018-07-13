@@ -289,7 +289,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(followingObj => {
             //console.log('All fetched following-', following);
             if(!followingObj.length){
-              document.querySelector('#headingOne button').innerText = 'Following (0) :';
+              document.querySelector('#headingOne button').innerText = 'Following (0) ';
             }
 
             followingObj.followArray.map(obj => {
@@ -335,7 +335,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(followersObj => {
           //  console.log('All fetched followers-', followers);
           if(!followersObj.length){
-            document.querySelector('#headingOne button').innerText = 'Followers (0) :';
+            document.querySelector('#headingOne button').innerText = 'Followers (0) ';
           }
 
 
@@ -447,12 +447,12 @@ function buildFollowing_card(followingArray,followingObj,url) {
 
   if(followingObj.last && !url){
     var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
-    document.querySelector('#headingOne button').innerText = 'Following ('+100*lastPageNo+') :';
+    document.querySelector('#headingOne button').innerText = 'Following ('+100*lastPageNo+') ';
 
   }
   else{
     if(!url){
-        document.querySelector('#headingOne button').innerText = 'Following ('+followingArray.length+') :';
+        document.querySelector('#headingOne button').innerText = 'Following ('+followingArray.length+') ';
     }
 
   }
@@ -512,12 +512,12 @@ function buildFollowers_card(followersArray,followersObj,url) {
 
   if(followersObj.last && !url){
     var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=')+5,followersObj.last.length));
-    document.querySelector('#headingTwo button').innerText = 'Followers ('+100*lastPageNo+') :';
+    document.querySelector('#headingTwo button').innerText = 'Followers ('+100*lastPageNo+') ';
 
   }
   else{
     if(!url){
-        document.querySelector('#headingTwo button').innerText = 'Followers ('+followersArray.length+') :';
+        document.querySelector('#headingTwo button').innerText = 'Followers ('+followersArray.length+') ';
 
     }
 
