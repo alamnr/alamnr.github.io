@@ -288,7 +288,9 @@ function fetchFollowing_n_Followers(dataObj){
           })
           .then(followingObj => {
             //console.log('All fetched following-', following);
-            document.querySelector('#followingDiv h4').innerText = 'Followers ('+followingObj.followArray.length+') :';
+            if(!followingObj.length){
+              document.querySelector('#followingDiv h4').innerText = 'Following (0) :';
+            }
 
             followingObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
@@ -319,6 +321,7 @@ function fetchFollowing_n_Followers(dataObj){
                 }
               });
             }, Promise.resolve());
+
           });
 
 
@@ -331,8 +334,10 @@ function fetchFollowing_n_Followers(dataObj){
           })
           .then(followersObj => {
           //  console.log('All fetched followers-', followers);
+          if(!followersObj.length){
+            document.querySelector('#followersDiv h4').innerText = 'Followers (0) :';
+          }
 
-          document.querySelector('#followersDiv h4').innerText = 'Followers ('+followersObj.followArray.length+') :';
 
             followersObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
@@ -439,7 +444,7 @@ function buildFollowing_card(followingArray,followingObj,url) {
     document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv h4').nextElementSibling);
     document.querySelector('#followingDiv .gridFollowing').innerHTML  = '';
   }
-  
+
   if(followingObj.last && !url){
     var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
     document.querySelector('#followingDiv h4').innerText = 'Following ('+100*lastPageNo+') :';
