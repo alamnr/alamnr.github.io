@@ -289,7 +289,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(followingObj => {
             //console.log('All fetched following-', following);
             if(!followingObj.length){
-              document.querySelector('#followingDiv h4').innerText = 'Following (0) :';
+              document.querySelector('#headingOne button').innerText = 'Following (0) :';
             }
 
             followingObj.followArray.map(obj => {
@@ -335,7 +335,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(followersObj => {
           //  console.log('All fetched followers-', followers);
           if(!followersObj.length){
-            document.querySelector('#followersDiv h4').innerText = 'Followers (0) :';
+            document.querySelector('#headingOne button').innerText = 'Followers (0) :';
           }
 
 
@@ -441,23 +441,23 @@ function buildUserDetails(user) {
 function buildFollowing_card(followingArray,followingObj,url) {
   if(url){
     //document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv').lastElementChild);
-    document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv h4').nextElementSibling);
-    document.querySelector('#followingDiv .gridFollowing').innerHTML  = '';
+    document.querySelector('#collapseOne .card-body').removeChild(document.querySelector('#collapseOne .card-body').firstElementChild);
+    document.querySelector('#collapseOne .card-body .gridFollowing').innerHTML  = '';
   }
 
   if(followingObj.last && !url){
     var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
-    document.querySelector('#followingDiv h4').innerText = 'Following ('+100*lastPageNo+') :';
+    document.querySelector('#headingOne button').innerText = 'Following ('+100*lastPageNo+') :';
 
   }
   else{
     if(!url){
-        document.querySelector('#followingDiv h4').innerText = 'Following ('+followingArray.length+') :';
+        document.querySelector('#headingOne button').innerText = 'Following ('+followingArray.length+') :';
     }
 
   }
 
-    let followingDiv = document.querySelector('#followingDiv .gridFollowing');
+    let followingDiv = document.querySelector('#collapseOne .card-body .gridFollowing');
 
   if (followingArray.length != 0 ) {
 
@@ -497,32 +497,34 @@ function buildFollowing_card(followingArray,followingObj,url) {
                 </nav>
                   `;
                   //document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
-                  document.querySelector('#followingDiv h4').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#followingDiv h4').nextElementSibling);
+                  document.querySelector('.gridFollowing').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#collapseOne .card-body').firstElementChild);
   }
 
 }
 function buildFollowers_card(followersArray,followersObj,url) {
   if(url){
     //document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv').lastElementChild);
-    document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv h4').nextElementSibling);
+    document.querySelector('#collapseTwo .card-body').removeChild(document.querySelector('##collapseOne .card-body').firstElementChild);
 
-    document.querySelector('#followersDiv .gridFollowers').innerHTML  = '';
+    document.querySelector('#collapseOne .card-body .gridFollowers').innerHTML  = '';
   }
 
 
   if(followersObj.last && !url){
     var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=')+5,followersObj.last.length));
-    document.querySelector('#followersDiv h4').innerText = 'Followers ('+100*lastPageNo+') :';
+    document.querySelector('#headingTwo button').innerText = 'Followers ('+100*lastPageNo+') :';
 
   }
   else{
     if(!url){
-        document.querySelector('#followersDiv h4').innerText = 'Followers ('+followersArray.length+') :';
+        document.querySelector('#headingTwo button').innerText = 'Followers ('+followersArray.length+') :';
+
     }
 
   }
 
-    let followersDiv = document.querySelector('#followersDiv .gridFollowers');
+    let followersDiv = document.querySelector('#collapseTwo .card-body .gridFollowers');
+
 
   if (followersArray.length != 0 ) {
 
@@ -562,8 +564,8 @@ function buildFollowers_card(followersArray,followersObj,url) {
     </nav>
                   `;
                   //document.querySelector('#followersDiv').appendChild(document.createRange().createContextualFragment(paging));
-                  document.querySelector('#followersDiv h4').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#followersDiv h4').nextElementSibling);
-                  //console.log('you call me -',url);
+                  document.querySelector('.gridFollowers').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#collapseTwo .card-body').firstElementChild);
+
   }
   if(!url){
     document.querySelector('#indicator').style.width = '100%';
