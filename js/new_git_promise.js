@@ -504,9 +504,9 @@ function buildFollowing_card(followingArray,followingObj,url) {
 function buildFollowers_card(followersArray,followersObj,url) {
   if(url){
     //document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv').lastElementChild);
-    document.querySelector('#collapseTwo .card-body').removeChild(document.querySelector('##collapseOne .card-body').firstElementChild);
+    document.querySelector('#collapseTwo .card-body').removeChild(document.querySelector('#collapseTwo .card-body').firstElementChild);
 
-    document.querySelector('#collapseOne .card-body .gridFollowers').innerHTML  = '';
+    document.querySelector('#collapseTwo .card-body .gridFollowers').innerHTML  = '';
   }
 
 
