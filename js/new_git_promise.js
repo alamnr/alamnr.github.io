@@ -335,7 +335,7 @@ function fetchFollowing_n_Followers(dataObj){
           .then(followersObj => {
           //  console.log('All fetched followers-', followers);
           if(!followersObj.length){
-            document.querySelector('#headingOne button').innerText = 'Followers (0) ';
+            document.querySelector('#headingTwo button').innerText = 'Followers (0) ';
           }
 
 
