@@ -73,27 +73,31 @@
 
 
     <section>
+      <div class="container">
+          <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+          <div class="progress">
+              <div id="indicator" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width:0%">
+                  0%
+              </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
         <div class="container">
             <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <nav class="breadcrumb" id="nav">
                                 <a class="breadcrumb-item" href="index.html">Home</a>
                                 <span class="breadcrumb-item active">Profile Summary</span>
                               </nav>
                 </div>
-                <div class="col-xs-12 col-sm-3 col-md-6 col-lg-7">
-
-                    <div class="progress">
-                        <div id="indicator" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width:0%">
-                            0%
-                        </div>
-
-                    </div>
-                    <p id="errMsg" class="text-center"></p>
-
-                </div>
-                <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2">
-                        <div class="text-center">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="text-center mt-3">
                                 <a class="btn btn-social-icon btn-twitter" title="Share On Twiiter" id="twitter" target="_blank"  rel="noopener">
                                         <span class="fa fa-twitter"></span>
                                 </a>
@@ -102,6 +106,9 @@
                                 </a>
                         </div>
                 </div>
+
+                </div>
+
 
             </div>
             </div>
@@ -205,11 +212,14 @@
 
 
     <br><hr>
-    <footer><div class="fixed-bottom-custom"><div>GitHub profile summary is built with <span class="highlight">Vanilla Javascript </span>,<a href="https://masonry.desandro.com" target="_blank"  rel="noopener">masonry.js</a>  and <a href="http://www.chartjs.org/docs/latest/" target="_blank"  rel="noopener">chart.js</a> (visualization). Sources on <a target="_blank"  rel="noopener" href="https://github.com/alamnr/alamnr.github.io"> GitHub.</a></div><div> Inspired by <a href="https://profile-summary-for-github.com" target="_blank"  rel="noopener">profile-summary-for-github</a></div></div></footer>
+    <footer><div class="fixed-bottom-custom"><div>GitHub profile summary is built with <span class="highlight">Vanilla Javascript </span>,<a href="https://masonry.desandro.com" target="_blank"  rel="noopener">masonry.js</a>  and <a href="http://www.chartjs.org/docs/latest/" target="_blank"  rel="noopener">chart.js</a> (visualization). Sources on <a target="_blank"  rel="noopener" href="https://github.com/alamnr/alamnr.github.io"> GitHub.</a></div><div> Inspired by <a href="https://profile-summary-for-github.com" target="_blank"  rel="noopener">profile-summary-for-github</a></div>
+
+    </div></footer>
 
     <span class="rate-limit">
         <span class="msg">The app is currently rate-limited<br>Please check back later</span>
         <span class="count"><span id="rate-limit-count"></span> requests left <br> before rate-limit</span>
+        <p id="errMsg" class="text-center"></p>
     </span>
 
     <!-- Loading Modal -->
@@ -221,6 +231,7 @@
               </div>
       	</div>
     </div>
+
     <script>
         var urlParams;
 

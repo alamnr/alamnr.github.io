@@ -19,6 +19,7 @@ function createCORSRequest(method, url) {
 
 function get(url) {
 
+
   var requestPromise = new Promise((resolve, reject) => {
     var req = createCORSRequest('GET', url);
     req.onload = () => {
@@ -47,8 +48,8 @@ function get(url) {
     // Handle network error
     req.onerror = () => {
       document.querySelector('#modal .animationload').style.display = 'none';
-      document.getElementById('errMsg').innerHTML = 'OOps! Internet Disconnected.';
-      document.getElementById('errMsg').style.color = 'red';
+       document.getElementById('errMsg').innerHTML = 'Error: Network Error.';
+       document.getElementById('errMsg').style.color = 'red';
       reject(Error('Network Error'));
 
 
@@ -276,9 +277,10 @@ function getUserInfo(userName, dataObj) {
       var indicatorDiv = document.querySelector('#indicator');
       indicatorDiv.className = 'progress-bar progress-bar-striped progress-bar-animated bg-danger';
       indicatorDiv.innerHTML = indicatorDiv.style.width + ' Opps, Error...';
-      setTimeout(() => progressDiv.style.visibility = 'hidden', 1000);
-      document.getElementById('errMsg').innerHTML = err;
-      document.getElementById('errMsg').style.color = 'red';
+      setTimeout(() => progressDiv.style.display = 'none', 1000);
+       document.getElementById('errMsg').innerHTML = err;
+       document.getElementById('errMsg').style.color = 'red';
+
     })
 }
 
@@ -378,6 +380,7 @@ function fetchFollowing_n_Followers(dataObj){
 
 function loadPagingData(url){
   document.querySelector('#modal .animationload').style.display = 'block';
+  document.getElementById('errMsg').innerHTML='';
 	var followArray=[];
   Promise.resolve().then(() => {
 
@@ -578,7 +581,7 @@ function buildFollowers_card(followersArray,followersObj,url) {
     document.querySelector('#indicator').style.width = '100%';
     document.querySelector('#indicator').innerHTML = '100% Done!';
     setTimeout(() => {
-      document.querySelector('.progress').style.visibility = 'hidden';
+      document.querySelector('.progress').style.display = 'none';
       document.querySelector('#modal .animationload').style.display = 'none';
     }, 2000);
 
