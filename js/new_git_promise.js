@@ -301,15 +301,16 @@ function fetchFollowing_n_Followers(dataObj){
             followingObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
-              let indecatorValue = 20 / followingArray.length;
+              //let indecatorValue = 20 / followingArray.length;
               return sequence.then(() => {
                 return followingObjPromise;
               }).then(objData => {
 
-                indecatorValue *= curIndex + 1;
+              /*  indecatorValue *= curIndex + 1;
 
-                  document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
-                  document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+                document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
+                document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+                */
 
 
                 // console.log('obj data-', objData.bio)
