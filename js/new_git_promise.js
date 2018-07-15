@@ -46,7 +46,11 @@ function get(url) {
     };
     // Handle network error
     req.onerror = () => {
+      document.querySelector('#modal .animationload').style.display = 'none';
+      document.getElementById('errMsg').innerHTML = 'OOps! Internet Disconnected.';
+      document.getElementById('errMsg').style.color = 'red';
       reject(Error('Network Error'));
+
 
     }
     req.send();
@@ -413,6 +417,9 @@ function loadPagingData(url){
                 }
               });
             }, Promise.resolve());
+          }).catch(err => {
+            console.log(err)
+
           });
           checkRateLimit();
 }
