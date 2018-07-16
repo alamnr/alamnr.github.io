@@ -277,7 +277,7 @@ function getUserInfo(userName, dataObj) {
       var indicatorDiv = document.querySelector('#indicator');
       indicatorDiv.className = 'progress-bar progress-bar-striped progress-bar-animated bg-danger';
       indicatorDiv.innerHTML = indicatorDiv.style.width + ' Opps, Error...';
-      setTimeout(() => progressDiv.style.display = 'none', 1000);
+      setTimeout(() => {progressDiv.style.display = 'none';  document.querySelector('#modal .animationload').style.display = 'none';}, 1000);
        document.getElementById('errMsg').innerHTML = err;
        document.getElementById('errMsg').style.color = 'red';
 
@@ -296,6 +296,8 @@ function fetchFollowing_n_Followers(dataObj){
             //console.log('All fetched following-', following);
             if(!followingObj.length){
               document.querySelector('#headingOne button').innerText = 'Following (0) ';
+              document.querySelector('#indicator').style.width =   '99.9%';
+              document.querySelector('#indicator').innerHTML = '99.9% wait...';
             }
 
             followingObj.followArray.map(obj => {
@@ -318,6 +320,8 @@ function fetchFollowing_n_Followers(dataObj){
 
                 if (curIndex === followingArray.length - 1) {
                   console.log('All Done Following-', dataObj.getFollowing());
+                  document.querySelector('#indicator').style.width =   '99.9%';
+                  document.querySelector('#indicator').innerHTML = '99.9% wait...';
                   buildFollowing_card(dataObj.getFollowing(),followingObj);
                   document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
                     e.preventDefault();
@@ -343,27 +347,32 @@ function fetchFollowing_n_Followers(dataObj){
           //  console.log('All fetched followers-', followers);
           if(!followersObj.length){
             document.querySelector('#headingTwo button').innerText = 'Followers (0) ';
+            document.querySelector('#indicator').style.width =   '99.9%';
+            document.querySelector('#indicator').innerHTML = '99.9% wait...';
           }
 
 
             followersObj.followArray.map(obj => {
               return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
             }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
-              let indecatorValue = 20 / followerArray.length;
+              //let indecatorValue = 20 / followerArray.length;
               return sequence.then(() => {
                 return followersObjPromise;
               }).then(objData => {
 
+                /*
                 indecatorValue *= curIndex + 1;
 
                   document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
                   document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
-
+                  */
 
                 //console.log('obj data-', objData.bio)
                 dataObj.getFollowers().push(objData);
                 if (curIndex === followerArray.length - 1) {
                   console.log('All Done Followers-', dataObj.getFollowers());
+                  document.querySelector('#indicator').style.width =   '99.9%';
+                  document.querySelector('#indicator').innerHTML = '99.9% wait...';
                   buildFollowers_card(dataObj.getFollowers(),followersObj);
                   document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
                     e.preventDefault();
@@ -578,15 +587,7 @@ function buildFollowers_card(followersArray,followersObj,url) {
                   document.querySelector('.gridFollowers').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#collapseTwo .card-body').firstElementChild);
 
   }
-  if(!url){
-    document.querySelector('#indicator').style.width = '100%';
-    document.querySelector('#indicator').innerHTML = '100% Done!';
-    setTimeout(() => {
-      document.querySelector('.progress').style.display = 'none';
-      document.querySelector('#modal .animationload').style.display = 'none';
-    }, 2000);
 
-  }
 
 
 }
@@ -749,9 +750,6 @@ function calculateDataAndGenerateChart(dataObj) {
 
     setShareButtonHref(dataObj.getUser());
 
-    // document.querySelector('#indicator').style.width = '100%';
-    // document.querySelector('#indicator').innerHTML = '100% Done!';
-    // setTimeout(() => document.querySelector('.progress').style.visibility = 'hidden', 1000);
 
   }
 }
@@ -765,6 +763,15 @@ function setShareButtonHref(user) {
   document.getElementById('facebook').href = facebookUrl;
   //console.log(twitterUrl);
   //console.log(facebookUrl);
+
+    document.querySelector('#indicator').style.width = '99.9%';
+    document.querySelector('#indicator').innerHTML = '99.9% Done!';
+    setTimeout(() => {
+      document.querySelector('.progress').style.display = 'none';
+      document.querySelector('#modal .animationload').style.display = 'none';
+    }, 2000);
+
+
 }
 
 function getCommitPerRepos(url, commits, repo, dataObj) {
