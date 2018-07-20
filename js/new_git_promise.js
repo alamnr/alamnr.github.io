@@ -50,6 +50,11 @@ function get(url) {
       document.querySelector('#modal .animationload').style.display = 'none';
        document.getElementById('errMsg').innerHTML = 'Error: Network Error.';
        document.getElementById('errMsg').style.color = 'red';
+       document.getElementById('reload').style.display = 'block';
+       document.getElementById('reload').addEventListener('click',(e)=>{
+         e.target.style.display = 'none';
+         window.location.reload();
+       });
       reject(Error('Network Error'));
 
 
