@@ -145,7 +145,7 @@ function getUserRepos(url, repos) {
 
 function getCommitPerRepos(url, commits, repo, dataObj) {
 
-  console.log('commit url-',url);
+  //console.log('commit url-',url);
   return getJSON(url).then(response => {
     //console.log(response);
     if (!commits) {
