@@ -99,7 +99,11 @@ footer a:hover {
         bottom: 30px;
         right: 0;
     }
-    footer{
+    /*footer{
         display: none;
+    }*/
+
+    .fixed-bottom-custom{
+      position: relative;
     }
 }
