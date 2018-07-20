@@ -143,6 +143,35 @@ function getUserRepos(url, repos) {
   }).catch(err => console.log(err));
 }
 
+function getCommitPerRepos(url, commits, repo, dataObj) {
+
+  console.log('commit url-',url);
+  return getJSON(url).then(response => {
+    //console.log(response);
+    if (!commits) {
+      commits = [];
+    }
+    commits = commits.concat(response.data);
+    //console.log(commits.length + " commits so far");
+    //console.log("commits- ",response);
+    if (response.linkData) {
+      if (parse_link_header(response.linkData).next) {
+
+        //console.log("There is more.");
+
+        let next = parse_link_header(response.linkData).next;
+        //console.log('next - ',next,'Repo Name-',repoName);
+        return getCommitPerRepos(next, commits, repo,dataObj);
+      }
+    }
+
+    //console.log('repoName - ',repo.name,' commit - ',commits);
+    dataObj.getCommitMap().set(repo, commits);
+    return commits;
+
+  }).catch(err => console.log(err));
+}
+
 function getUserInfo(userName, dataObj) {
 
   var progressDiv = document.querySelector('.progress');
@@ -779,33 +808,7 @@ function setShareButtonHref(user) {
 
 }
 
-function getCommitPerRepos(url, commits, repo, dataObj) {
-  //console.log('commit url-',url);
-  return getJSON(url).then(response => {
-    //console.log(response);
-    if (!commits) {
-      commits = [];
-    }
-    commits = commits.concat(response.data);
-    //console.log(commits.length + " commits so far");
-    //console.log("commits- ",response);
-    if (response.linkData) {
-      if (parse_link_header(response.linkData).next) {
 
-        //console.log("There is more.");
-
-        let next = parse_link_header(response.linkData).next;
-        //console.log('next - ',next,'Repo Name-',repoName);
-        return getCommitPerRepos(next, commits, repo);
-      }
-    }
-
-    //console.log('repoName - ',repo.name,' commit - ',commits);
-    dataObj.getCommitMap().set(repo, commits);
-    return commits;
-
-  }).catch(err => console.log(err));
-}
 
 
 
