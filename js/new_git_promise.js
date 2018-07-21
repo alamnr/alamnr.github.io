@@ -486,7 +486,7 @@ function buildUserDetails(user) {
   var output = `<ul class="list-group list-group-flush">
                     <li class="list-group-item"><i class="fa fa-fw fa-user"></i> ${user.login} <p><small>( ${user.name ? user.name : ''} )</small></p>  </li>
                     <li class="list-group-item"><i class="fa fa-fw fa-database"></i> ${user.public_repos} public repos <p><small>(Own Repos- ${user.ownRepos ? user.ownRepos : '0'}, Forked- ${user.forkedRepos})</small></p> </li>
-                    <li class="list-group-item"><i class="fa fa-fw fa-clock-o"></i>Joined GitHub ${year} Year Ago  </li>
+                    <li class="list-group-item"><i class="fa fa-fw fa-clock-o"></i>Joined GitHub ${year ? year: '1'} Year Ago  </li>
                     <li class="list-group-item"><i class="fa fa-fw fa-envelope"></i> ${user.email ? user.email : ''}  </li>
                     <li class="list-group-item"><i class="fa fa-fw fa-external-link"></i> <a href="${user.html_url}" target="_blank"  rel="noopener">View Profile On GitHub</a>   </li>
                     </ul>`;
