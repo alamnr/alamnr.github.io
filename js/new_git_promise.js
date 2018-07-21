@@ -51,6 +51,7 @@ function get(url) {
        document.getElementById('errMsg').innerHTML = 'Error: Network Error.';
        document.getElementById('errMsg').style.color = 'red';
        document.getElementById('reload').style.display = 'block';
+       document.getElementById('timer').style.display = 'none';
        document.getElementById('reload').addEventListener('click',(e)=>{
          e.target.style.display = 'none';
          window.location.reload();
@@ -804,7 +805,7 @@ function setShareButtonHref(user) {
       document.querySelector('.progress').style.display = 'none';
       document.querySelector('#modal .animationload').style.display = 'none';
     }, 2000);
-
+    clearTimeout(t);
 
 }
 

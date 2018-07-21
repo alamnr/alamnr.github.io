@@ -224,6 +224,7 @@
     <span class="rate-limit">
         <span class="msg">The app is currently rate-limited<br>Please check back later</span>
         <span class="count"><span id="rate-limit-count"></span> requests left <br> before rate-limit</span>
+        <h6 id="timer">00:00:00</h6>
         <p id="errMsg" class="text-center"></p>
         <button class="btn btn-primary btn-sm" id="reload" style="display:none" type="button">Reload</button>
     </span>
@@ -240,6 +241,7 @@
 
     <script>
         var urlParams;
+        var h1 = document.getElementById('timer'),millisec = 0, seconds = 0, minutes = 0,hours=0, t;
 
         (window.onpopstate = function () {
             checkRateLimit();
@@ -260,6 +262,7 @@
             if(urlParams['user']){
                 document.body.setAttribute('data-user-id',urlParams['user']);
                 var data = createDataObject();
+                timer();
                 getUserInfo(urlParams['user'], data);
                 document.querySelector('#modal .animationload').style.display = 'block';
             }
@@ -272,6 +275,29 @@
 
 
 
+  function add() {
+    millisec++;
+    if (millisec>=9){
+     millisec=0
+     seconds+=1
+
+    if (seconds >= 60) {
+        seconds = 0;
+        minutes++;
+        if (minutes >= 60) {
+            minutes = 0;
+            hours++;
+        }
+    }
+    }
+
+    h1.textContent = /*(hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +*/ (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +(seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" + (millisec > 9 ? millisec : "0" + millisec);
+
+    timer();
+}
+function timer() {
+    t = setTimeout(add, 100);
+}
 
 
     </script>
