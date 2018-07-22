@@ -48,14 +48,14 @@ function get(url) {
     // Handle network error
     req.onerror = () => {
       document.querySelector('#modal .animationload').style.display = 'none';
-       document.getElementById('errMsg').innerHTML = 'Error: Network Error.';
-       document.getElementById('errMsg').style.color = 'red';
-       document.getElementById('reload').style.display = 'block';
-       document.getElementById('timer').style.display = 'none';
-       document.getElementById('reload').addEventListener('click',(e)=>{
-         e.target.style.display = 'none';
-         window.location.reload();
-       });
+      document.getElementById('errMsg').innerHTML = 'Error: Network Error.';
+      document.getElementById('errMsg').style.color = 'red';
+      document.getElementById('reload').style.display = 'block';
+      document.getElementById('timer').style.display = 'none';
+      document.getElementById('reload').addEventListener('click', (e) => {
+        e.target.style.display = 'none';
+        window.location.reload();
+      });
       reject(Error('Network Error'));
 
 
@@ -99,8 +99,8 @@ function getFollow_ing_ers(url, follow_ing_ers) {
     */
 
     if (response.linkData) {
-      obj.prev =  parse_link_header(response.linkData).prev;
-      obj.next =  parse_link_header(response.linkData).next;
+      obj.prev = parse_link_header(response.linkData).prev;
+      obj.next = parse_link_header(response.linkData).next;
       obj.last = parse_link_header(response.linkData).last;
       obj.first = parse_link_header(response.linkData).first;
     }
@@ -162,7 +162,7 @@ function getCommitPerRepos(url, commits, repo, dataObj) {
 
         let next = parse_link_header(response.linkData).next;
         //console.log('next - ',next,'Repo Name-',repoName);
-        return getCommitPerRepos(next, commits, repo,dataObj);
+        return getCommitPerRepos(next, commits, repo, dataObj);
       }
     }
 
@@ -312,164 +312,172 @@ function getUserInfo(userName, dataObj) {
       var indicatorDiv = document.querySelector('#indicator');
       indicatorDiv.className = 'progress-bar progress-bar-striped progress-bar-animated bg-danger';
       indicatorDiv.innerHTML = indicatorDiv.style.width + ' Opps, Error...';
-      setTimeout(() => {progressDiv.style.display = 'none';  document.querySelector('#modal .animationload').style.display = 'none';}, 1000);
-       document.getElementById('errMsg').innerHTML = err;
-       document.getElementById('errMsg').style.color = 'red';
+      setTimeout(() => {
+        progressDiv.style.display = 'none';
+        document.querySelector('#modal .animationload').style.display = 'none';
+      }, 1000);
+      document.getElementById('errMsg').innerHTML = err;
+      document.getElementById('errMsg').style.color = 'red';
 
     })
 }
 
-function fetchFollowing_n_Followers(dataObj){
+function fetchFollowing_n_Followers(dataObj) {
 
-        Promise.resolve().then(() => {
+  Promise.resolve().then(() => {
 
-              return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-
-
-          })
-          .then(followingObj => {
-            //console.log('All fetched following-', following);
-            if(!followingObj.length){
-              document.querySelector('#headingOne button').innerText = 'Following (0) ';
-              document.querySelector('#indicator').style.width =   '99.9%';
-              document.querySelector('#indicator').innerHTML = '99.9% wait...';
-            }
-
-            followingObj.followArray.map(obj => {
-              return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-            }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
-              //let indecatorValue = 20 / followingArray.length;
-              return sequence.then(() => {
-                return followingObjPromise;
-              }).then(objData => {
-
-              /*  indecatorValue *= curIndex + 1;
-
-                document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
-                document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
-                */
+      return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
 
 
-                // console.log('obj data-', objData.bio)
-                dataObj.getFollowing().push(objData);
+    })
+    .then(followingObj => {
+      //console.log('All fetched following-', following);
+      if (!followingObj.length) {
+        document.querySelector('#headingOne button').innerText = 'Following (0) ';
+        document.querySelector('#indicator').style.width = '99.9%';
+        document.querySelector('#indicator').innerHTML = '99.9% wait...';
+      }
 
-                if (curIndex === followingArray.length - 1) {
-                  console.log('All Done Following-', dataObj.getFollowing());
-                  document.querySelector('#indicator').style.width =   '99.9%';
-                  document.querySelector('#indicator').innerHTML = '99.9% wait...';
-                  buildFollowing_card(dataObj.getFollowing(),followingObj);
-                  document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
-                    e.preventDefault();
-                    //console.log('clicked-',e.target.href);
-                    loadPagingData(e.target.href);
-                  })});
+      followingObj.followArray.map(obj => {
+        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
+        //let indecatorValue = 20 / followingArray.length;
+        return sequence.then(() => {
+          return followingObjPromise;
+        }).then(objData => {
 
-                }
-              });
-            }, Promise.resolve());
+          /*  indecatorValue *= curIndex + 1;
 
-          });
+            document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
+            document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
+            */
 
 
+          // console.log('obj data-', objData.bio)
+          dataObj.getFollowing().push(objData);
 
-
-        Promise.resolve().then(() => {
-
-              return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-
-          })
-          .then(followersObj => {
-          //  console.log('All fetched followers-', followers);
-          if(!followersObj.length){
-            document.querySelector('#headingTwo button').innerText = 'Followers (0) ';
-            document.querySelector('#indicator').style.width =   '99.9%';
+          if (curIndex === followingArray.length - 1) {
+            console.log('All Done Following-', dataObj.getFollowing());
+            document.querySelector('#indicator').style.width = '99.9%';
             document.querySelector('#indicator').innerHTML = '99.9% wait...';
+            buildFollowing_card(dataObj.getFollowing(), followingObj);
+            document.querySelectorAll('.page-link').forEach(elem => {
+              elem.addEventListener('click', (e) => {
+                e.preventDefault();
+                //console.log('clicked-',e.target.href);
+                loadPagingData(e.target.href);
+              })
+            });
+
           }
+        });
+      }, Promise.resolve());
+
+    });
 
 
-            followersObj.followArray.map(obj => {
-              return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-            }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
-              //let indecatorValue = 20 / followerArray.length;
-              return sequence.then(() => {
-                return followersObjPromise;
-              }).then(objData => {
 
-                /*
-                indecatorValue *= curIndex + 1;
 
-                  document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
-                  document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
-                  */
+  Promise.resolve().then(() => {
 
-                //console.log('obj data-', objData.bio)
-                dataObj.getFollowers().push(objData);
-                if (curIndex === followerArray.length - 1) {
-                  console.log('All Done Followers-', dataObj.getFollowers());
-                  document.querySelector('#indicator').style.width =   '99.9%';
-                  document.querySelector('#indicator').innerHTML = '99.9% wait...';
-                  buildFollowers_card(dataObj.getFollowers(),followersObj);
-                  document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
-                    e.preventDefault();
+      return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
 
-                    //console.log('clicked-',e.target.href);
-                    loadPagingData(e.target.href);
-                  })});
+    })
+    .then(followersObj => {
+      //  console.log('All fetched followers-', followers);
+      if (!followersObj.length) {
+        document.querySelector('#headingTwo button').innerText = 'Followers (0) ';
+        document.querySelector('#indicator').style.width = '99.9%';
+        document.querySelector('#indicator').innerHTML = '99.9% wait...';
+      }
 
-                }
-              });
-            }, Promise.resolve());
-          });
+
+      followersObj.followArray.map(obj => {
+        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
+        //let indecatorValue = 20 / followerArray.length;
+        return sequence.then(() => {
+          return followersObjPromise;
+        }).then(objData => {
+
+          /*
+          indecatorValue *= curIndex + 1;
+
+            document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
+            document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
+            */
+
+          //console.log('obj data-', objData.bio)
+          dataObj.getFollowers().push(objData);
+          if (curIndex === followerArray.length - 1) {
+            console.log('All Done Followers-', dataObj.getFollowers());
+            document.querySelector('#indicator').style.width = '99.9%';
+            document.querySelector('#indicator').innerHTML = '99.9% wait...';
+            buildFollowers_card(dataObj.getFollowers(), followersObj);
+            document.querySelectorAll('.page-link').forEach(elem => {
+              elem.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                //console.log('clicked-',e.target.href);
+                loadPagingData(e.target.href);
+              })
+            });
+
+          }
+        });
+      }, Promise.resolve());
+    });
 
 }
 
-function loadPagingData(url){
+function loadPagingData(url) {
   document.querySelector('#modal .animationload').style.display = 'block';
-  document.getElementById('errMsg').innerHTML='';
-	var followArray=[];
+  document.getElementById('errMsg').innerHTML = '';
+  var followArray = [];
   Promise.resolve().then(() => {
 
-              return getFollow_ing_ers(url);
+      return getFollow_ing_ers(url);
 
-          })
-          .then(followersObj => {
-
-
-            followersObj.followArray.map(obj => {
-              return getJSON(obj.url+'?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
-            }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
-
-              return sequence.then(() => {
-                return followersObjPromise;
-              }).then(objData => {
+    })
+    .then(followersObj => {
 
 
+      followersObj.followArray.map(obj => {
+        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
 
-                followArray.push(objData);
-                if (curIndex === followerArray.length - 1) {
-                  console.log('All Done Followers-', followArray);
-				  if(url && url.indexOf('following') !==-1){
-					buildFollowing_card(followArray,followersObj,url);
-				  }
-				  else{
-					buildFollowers_card(followArray,followersObj,url);
-				  }
-          document.querySelector('#modal .animationload').style.display = 'none';
+        return sequence.then(() => {
+          return followersObjPromise;
+        }).then(objData => {
 
-				  document.querySelectorAll('.page-link').forEach(elem=>{elem.addEventListener('click',(e)=>{
-                    e.preventDefault();
-                    //console.log('clicked-',e.target.href);
-                    loadPagingData(e.target.href);
-                  })});
 
-                }
-              });
-            }, Promise.resolve());
-          }).catch(err => {
-            console.log(err)
 
-          });
-          checkRateLimit();
+          followArray.push(objData);
+          if (curIndex === followerArray.length - 1) {
+            console.log('All Done Followers-', followArray);
+            if (url && url.indexOf('following') !== -1) {
+              buildFollowing_card(followArray, followersObj, url);
+            } else {
+              buildFollowers_card(followArray, followersObj, url);
+            }
+            document.querySelector('#modal .animationload').style.display = 'none';
+
+            document.querySelectorAll('.page-link').forEach(elem => {
+              elem.addEventListener('click', (e) => {
+                e.preventDefault();
+                //console.log('clicked-',e.target.href);
+                loadPagingData(e.target.href);
+              })
+            });
+
+          }
+        });
+      }, Promise.resolve());
+    }).catch(err => {
+      console.log(err)
+
+    });
+  checkRateLimit();
 }
 
 function buildUserDetails(user) {
@@ -483,6 +491,7 @@ function buildUserDetails(user) {
 
   var today = new Date();
   var year = Math.floor((today - then) / 31536000000);
+  //console.log('year-' + year);
   var output = `<ul class="list-group list-group-flush">
                     <li class="list-group-item"><i class="fa fa-fw fa-user"></i> ${user.login} <p><small>( ${user.name ? user.name : ''} )</small></p>  </li>
                     <li class="list-group-item"><i class="fa fa-fw fa-database"></i> ${user.public_repos} public repos <p><small>(Own Repos- ${user.ownRepos ? user.ownRepos : '0'}, Forked- ${user.forkedRepos})</small></p> </li>
@@ -493,28 +502,27 @@ function buildUserDetails(user) {
   document.getElementById('userDetail').innerHTML = output;
 }
 
-function buildFollowing_card(followingArray,followingObj,url) {
-  if(url){
+function buildFollowing_card(followingArray, followingObj, url) {
+  if (url) {
     //document.querySelector('#followingDiv').removeChild(document.querySelector('#followingDiv').lastElementChild);
     document.querySelector('#collapseOne .card-body').removeChild(document.querySelector('#collapseOne .card-body').firstElementChild);
-    document.querySelector('#collapseOne .card-body .gridFollowing').innerHTML  = '';
+    document.querySelector('#collapseOne .card-body .gridFollowing').innerHTML = '';
   }
 
-  if(followingObj.last && !url){
-    var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=')+5,followingObj.last.length));
-    document.querySelector('#headingOne button').innerText = 'Following ('+100*lastPageNo+') ';
+  if (followingObj.last && !url) {
+    var lastPageNo = Number.parseFloat(followingObj.last.substring(followingObj.last.lastIndexOf('page=') + 5, followingObj.last.length));
+    document.querySelector('#headingOne button').innerText = 'Following (' + 100 * lastPageNo + ') ';
 
-  }
-  else{
-    if(!url){
-        document.querySelector('#headingOne button').innerText = 'Following ('+followingArray.length+') ';
+  } else {
+    if (!url) {
+      document.querySelector('#headingOne button').innerText = 'Following (' + followingArray.length + ') ';
     }
 
   }
 
-    let followingDiv = document.querySelector('#collapseOne .card-body .gridFollowing');
+  let followingDiv = document.querySelector('#collapseOne .card-body .gridFollowing');
 
-  if (followingArray.length != 0 ) {
+  if (followingArray.length != 0) {
 
     followingArray.forEach(obj => {
       let output = ` <div class="grid-item">
@@ -531,7 +539,7 @@ function buildFollowing_card(followingArray,followingObj,url) {
       let divToAppend = document.createRange().createContextualFragment(output);
       followingDiv.appendChild(divToAppend);
     })
-    var msnryFolowing = new Masonry( '.gridFollowing', {
+    var msnryFolowing = new Masonry('.gridFollowing', {
       // options
       itemSelector: '.grid-item',
       columnWidth: 25
@@ -551,37 +559,37 @@ function buildFollowing_card(followingArray,followingObj,url) {
                   </ul>
                 </nav>
                   `;
-                  //document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
-                  document.querySelector('.gridFollowing').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#collapseOne .card-body').firstElementChild);
+    //document.querySelector('#followingDiv').appendChild(document.createRange().createContextualFragment(paging));
+    document.querySelector('.gridFollowing').parentNode.insertBefore(document.createRange().createContextualFragment(paging), document.querySelector('#collapseOne .card-body').firstElementChild);
   }
 
 }
-function buildFollowers_card(followersArray,followersObj,url) {
-  if(url){
+
+function buildFollowers_card(followersArray, followersObj, url) {
+  if (url) {
     //document.querySelector('#followersDiv').removeChild(document.querySelector('#followersDiv').lastElementChild);
     document.querySelector('#collapseTwo .card-body').removeChild(document.querySelector('#collapseTwo .card-body').firstElementChild);
 
-    document.querySelector('#collapseTwo .card-body .gridFollowers').innerHTML  = '';
+    document.querySelector('#collapseTwo .card-body .gridFollowers').innerHTML = '';
   }
 
 
-  if(followersObj.last && !url){
-    var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=')+5,followersObj.last.length));
-    document.querySelector('#headingTwo button').innerText = 'Followers ('+100*lastPageNo+') ';
+  if (followersObj.last && !url) {
+    var lastPageNo = Number.parseFloat(followersObj.last.substring(followersObj.last.lastIndexOf('page=') + 5, followersObj.last.length));
+    document.querySelector('#headingTwo button').innerText = 'Followers (' + 100 * lastPageNo + ') ';
 
-  }
-  else{
-    if(!url){
-        document.querySelector('#headingTwo button').innerText = 'Followers ('+followersArray.length+') ';
+  } else {
+    if (!url) {
+      document.querySelector('#headingTwo button').innerText = 'Followers (' + followersArray.length + ') ';
 
     }
 
   }
 
-    let followersDiv = document.querySelector('#collapseTwo .card-body .gridFollowers');
+  let followersDiv = document.querySelector('#collapseTwo .card-body .gridFollowers');
 
 
-  if (followersArray.length != 0 ) {
+  if (followersArray.length != 0) {
 
 
     followersArray.forEach(obj => {
@@ -599,7 +607,7 @@ function buildFollowers_card(followersArray,followersObj,url) {
       let divToAppend = document.createRange().createContextualFragment(output);
       followersDiv.appendChild(divToAppend);
     })
-    var msnryFollowers = new Masonry( '.gridFollowers', {
+    var msnryFollowers = new Masonry('.gridFollowers', {
       // options
       itemSelector: '.grid-item',
       columnWidth: 25
@@ -618,8 +626,8 @@ function buildFollowers_card(followersArray,followersObj,url) {
       </ul>
     </nav>
                   `;
-                  //document.querySelector('#followersDiv').appendChild(document.createRange().createContextualFragment(paging));
-                  document.querySelector('.gridFollowers').parentNode.insertBefore(document.createRange().createContextualFragment(paging),document.querySelector('#collapseTwo .card-body').firstElementChild);
+    //document.querySelector('#followersDiv').appendChild(document.createRange().createContextualFragment(paging));
+    document.querySelector('.gridFollowers').parentNode.insertBefore(document.createRange().createContextualFragment(paging), document.querySelector('#collapseTwo .card-body').firstElementChild);
 
   }
 
@@ -655,7 +663,7 @@ function calculateDataAndGenerateChart(dataObj) {
     buildUserDetails(dataObj.getUser());
     //buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
-
+    setShareButtonHref(dataObj.getUser());
 
   } else {
 
@@ -799,13 +807,13 @@ function setShareButtonHref(user) {
   //console.log(twitterUrl);
   //console.log(facebookUrl);
 
-    document.querySelector('#indicator').style.width = '99.9%';
-    document.querySelector('#indicator').innerHTML = '99.9% Done!';
-    setTimeout(() => {
-      document.querySelector('.progress').style.display = 'none';
-      document.querySelector('#modal .animationload').style.display = 'none';
-    }, 2000);
-    clearTimeout(t);
+  document.querySelector('#indicator').style.width = '99.9%';
+  document.querySelector('#indicator').innerHTML = '99.9% Done!';
+  setTimeout(() => {
+    document.querySelector('.progress').style.display = 'none';
+    document.querySelector('#modal .animationload').style.display = 'none';
+  }, 2000);
+  clearTimeout(t);
 
 }
 
@@ -919,15 +927,15 @@ function createDataObject() {
     getFollowing: function() {
       return following;
     },
-    setFollowing:function(emptyArray) {
+    setFollowing: function(emptyArray) {
       following = emptyArray;
     },
     getFollowers: function() {
       return followers;
     },
-    setFollowers:function(emptyArray) {
-        followers = emptyArray;
-      }
+    setFollowers: function(emptyArray) {
+      followers = emptyArray;
+    }
 
   };
   return dataObject;
