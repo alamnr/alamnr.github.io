@@ -318,7 +318,7 @@ function getUserInfo(userName, dataObj) {
       }, 1000);
       document.getElementById('errMsg').innerHTML = err;
       document.getElementById('errMsg').style.color = 'red';
-
+      clearTimeout(t);
     })
 }
 
