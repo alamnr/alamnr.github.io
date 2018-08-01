@@ -290,7 +290,9 @@ function getUserInfo(userName, dataObj) {
 
           if (currentIndex === repoArray.length - 1) {
             console.log('All Done-', dataObj.getCommitMap());
-            fetchFollowing_n_Followers(dataObj);
+            //fetchFollowing_n_Followers(dataObj);
+            fetchFollowing(dataObj);
+
             calculateDataAndGenerateChart(dataObj);
             checkRateLimit();
           }
@@ -301,7 +303,9 @@ function getUserInfo(userName, dataObj) {
       if (dataObj.getRepos().filter(repo => {
           return repo.fork === false && repo.size !== 0
         }).length === 0) {
-        fetchFollowing_n_Followers(dataObj);
+        //fetchFollowing_n_Followers(dataObj);
+        fetchFollowing(dataObj);
+
         calculateDataAndGenerateChart(dataObj);
         checkRateLimit();
       }
@@ -318,39 +322,44 @@ function getUserInfo(userName, dataObj) {
       }, 1000);
       document.getElementById('errMsg').innerHTML = err;
       document.getElementById('errMsg').style.color = 'red';
+      clearTimeout(t);
+      
 
     })
 }
 
-function fetchFollowing_n_Followers(dataObj) {
+//async function fetchFollowing_n_Followers(dataObj) {
+    async function fetchFollowing(dataObj) {
 
-  Promise.resolve().then(() => {
+        console.log('Calling Following');
+   let p1 = await Promise.resolve().then(() => {
 
       return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
 
 
-    })
-    .then(followingObj => {
+    });
+        console.log(p1);
+  
       //console.log('All fetched following-', following);
-      if (!followingObj.length) {
+      if (!p1.followArray.length) {
         document.querySelector('#headingOne button').innerText = 'Following (0) ';
-        document.querySelector('#indicator').style.width = '99.9%';
-        document.querySelector('#indicator').innerHTML = '99.9% wait...';
+        document.querySelector('#indicator').style.width = '79.9%';
+        document.querySelector('#indicator').innerHTML = '79.9% wait...';
       }
 
-      followingObj.followArray.map(obj => {
-        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      p1.followArray.map(obj => {
+        return  getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
       }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
-        //let indecatorValue = 20 / followingArray.length;
+        let indecatorValue = 20 / followingArray.length;
         return sequence.then(() => {
           return followingObjPromise;
         }).then(objData => {
 
-          /*  indecatorValue *= curIndex + 1;
+            indecatorValue *= curIndex + 1;
 
             document.querySelector('#indicator').style.width =  Number.parseFloat(60+ indecatorValue).toFixed(2) + '%';
             document.querySelector('#indicator').innerHTML = Number.parseFloat(60 + indecatorValue).toFixed(2) + '% wait...';
-            */
+            
 
 
           // console.log('obj data-', objData.bio)
@@ -358,9 +367,9 @@ function fetchFollowing_n_Followers(dataObj) {
 
           if (curIndex === followingArray.length - 1) {
             console.log('All Done Following-', dataObj.getFollowing());
-            document.querySelector('#indicator').style.width = '99.9%';
-            document.querySelector('#indicator').innerHTML = '99.9% wait...';
-            buildFollowing_card(dataObj.getFollowing(), followingObj);
+           // document.querySelector('#indicator').style.width = '99.9%';
+        //    document.querySelector('#indicator').innerHTML = '99.9% wait...';
+            buildFollowing_card(dataObj.getFollowing(), p1.followArray);
             document.querySelectorAll('.page-link').forEach(elem => {
               elem.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -373,47 +382,52 @@ function fetchFollowing_n_Followers(dataObj) {
         });
       }, Promise.resolve());
 
-    });
+    
+      
+        console.log('Calling Followers');
+        fetchFollowers(dataObj);
+
+    }
+
+async function fetchFollowers(dataObj) {
 
 
-
-
-  Promise.resolve().then(() => {
+  let p2 = await Promise.resolve().then(() => {
 
       return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
 
-    })
-    .then(followersObj => {
+    });
+        console.log(p2);
       //  console.log('All fetched followers-', followers);
-      if (!followersObj.length) {
+      if (!p2.followArray.length) {
         document.querySelector('#headingTwo button').innerText = 'Followers (0) ';
         document.querySelector('#indicator').style.width = '99.9%';
         document.querySelector('#indicator').innerHTML = '99.9% wait...';
       }
 
 
-      followersObj.followArray.map(obj => {
-        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      p2.followArray.map(obj => {
+        return  getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
       }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
-        //let indecatorValue = 20 / followerArray.length;
+        let indecatorValue = 20 / followerArray.length;
         return sequence.then(() => {
           return followersObjPromise;
         }).then(objData => {
 
-          /*
+          
           indecatorValue *= curIndex + 1;
 
             document.querySelector('#indicator').style.width = Number.parseFloat(80 + indecatorValue).toFixed(2) + '%';
             document.querySelector('#indicator').innerHTML = Number.parseFloat(80 + indecatorValue).toFixed(2) + '% wait...';
-            */
+            
 
           //console.log('obj data-', objData.bio)
           dataObj.getFollowers().push(objData);
           if (curIndex === followerArray.length - 1) {
             console.log('All Done Followers-', dataObj.getFollowers());
-            document.querySelector('#indicator').style.width = '99.9%';
-            document.querySelector('#indicator').innerHTML = '99.9% wait...';
-            buildFollowers_card(dataObj.getFollowers(), followersObj);
+            //document.querySelector('#indicator').style.width = '99.9%';
+            //document.querySelector('#indicator').innerHTML = '99.9% wait...';
+            buildFollowers_card(dataObj.getFollowers(), p2.followArray);
             document.querySelectorAll('.page-link').forEach(elem => {
               elem.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -426,7 +440,7 @@ function fetchFollowing_n_Followers(dataObj) {
           }
         });
       }, Promise.resolve());
-    });
+    console.log('All Done');
 
 }
 
@@ -807,8 +821,8 @@ function setShareButtonHref(user) {
   //console.log(twitterUrl);
   //console.log(facebookUrl);
 
-  document.querySelector('#indicator').style.width = '99.9%';
-  document.querySelector('#indicator').innerHTML = '99.9% Done!';
+  //document.querySelector('#indicator').style.width = '99.9%';
+  //document.querySelector('#indicator').innerHTML = '99.9% Done!';
   setTimeout(() => {
     document.querySelector('.progress').style.display = 'none';
     document.querySelector('#modal .animationload').style.display = 'none';
