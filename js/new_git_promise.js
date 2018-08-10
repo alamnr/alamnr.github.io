@@ -664,7 +664,7 @@ function calculateDataAndGenerateChart(dataObj) {
     buildUserDetails(dataObj.getUser());
     //buildFollow_ing_ers_card(dataObj);
     createLineChart('quarterCommitCount', dataObj);
-    setShareButtonHref(dataObj.getUser());
+    setShareButtonHref(dataObj);
 
   } else {
 
@@ -695,6 +695,9 @@ function calculateDataAndGenerateChart(dataObj) {
       }
 
     });
+	
+	 
+
 
     // Generate Chart
 
@@ -792,15 +795,15 @@ function calculateDataAndGenerateChart(dataObj) {
       }
     }
 
-    setShareButtonHref(dataObj.getUser());
+    setShareButtonHref(dataObj);
 
 
   }
 }
 
-function setShareButtonHref(user) {
-  let profileUrl = "https://alamnr.github.io/profile.html?user=" + user.login;
-  let shareText = user.login + "'s GitHub profile - Visualized:";
+function setShareButtonHref(dataObj) {
+  let profileUrl = "https://alamnr.github.io/profile.html?user=" + dataObj.getUser().login;
+  let shareText = dataObj.getUser().login + "'s GitHub profile - Visualized:";
   let twitterUrl = "https://twitter.com/intent/tweet?url=" + profileUrl + "&text=" + shareText + "&via=javascript&related=scope_closer";
   let facebookUrl = "https://facebook.com/sharer.php?u=" + profileUrl + "&quote=" + shareText;
   document.getElementById('twitter').href = twitterUrl;
@@ -815,7 +818,18 @@ function setShareButtonHref(user) {
     document.querySelector('#modal .animationload').style.display = 'none';
   }, 2000);
   clearTimeout(t);
+  
+   if(dataObj.getLangRepoCount() && dataObj.getLangRepoCount().size>10){
+	
+        document.getElementById('langRepoCountDiv').className = 'col-xs-12 col-sm-12 col-md-12 col-lg-12';
+		if(dataObj.getLangStarCount() && dataObj.getLangStarCount().size>10){
+	
+		document.getElementById('langStarCountDiv').className = 'col-xs-12 col-sm-12 col-md-12 col-lg-12';
+		}
+        document.getElementById('langCommitCountDiv').className = 'col-xs-12 col-sm-12 col-md-12 col-lg-12';
 
+  }
+ 
 }
 
 
