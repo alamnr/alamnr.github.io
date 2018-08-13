@@ -819,10 +819,10 @@ function setShareButtonHref(dataObj) {
   }, 2000);
   clearTimeout(t);
   
-   if(dataObj.getLangRepoCount() && dataObj.getLangRepoCount().size>10){
+   if(dataObj.getLangRepoCount() && dataObj.getLangRepoCount().size>13){
 	
         document.getElementById('langRepoCountDiv').className = 'col-xs-12 col-sm-12 col-md-12 col-lg-12';
-		if(dataObj.getLangStarCount() && dataObj.getLangStarCount().size>10){
+		if(dataObj.getLangStarCount() && dataObj.getLangStarCount().size>13){
 	
 		document.getElementById('langStarCountDiv').className = 'col-xs-12 col-sm-12 col-md-12 col-lg-12';
 		}
