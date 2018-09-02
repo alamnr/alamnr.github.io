@@ -69,7 +69,7 @@
               <p class="mb-3 font-weight-normal h3 text-xs-center text-md-center text-lg-center text-xl-center">Enter GitHub User Name</p>
               <!--<input type="text" class="form-control" id="gitUserName" placeholder="Ex: alamnr"> -->
               <div class="input-group text-center">
-                    <input class="form-control py-2" type="search" placeholder="Ex: alamnr" id="gitUserName">
+                    <input class="form-control py-2" type="search" placeholder="Ex: alamnr" id="gitUserName" autofocus="autofocus">
                     <span class="input-group-append">
                       <button class="btn btn-outline-secondary" type="button" id="userSearchBtn">
                           <i class="fa fa-search"></i>
@@ -103,10 +103,9 @@
 
     if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
       callback();
-      document.getElementById('gitUserName').focus();
     } else {
       document.addEventListener("DOMContentLoaded", callback);
-    }
+	}
 
     document.getElementById('userSearchBtn').addEventListener('click',()=>{
       if (document.getElementById('gitUserName').value) {
