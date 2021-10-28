@@ -12,10 +12,20 @@ function createCORSRequest(method, url) {
     // CORS not supported.
     xhr = null;
   }
-
+  xhr.setRequestHeader("Authorization", authenticateUser('4451d14d8fff3a16d020', '8157182318a6a78875ebef124d9993ec53d0eb56'));
   return xhr;
 }
 
+function authenticateUser(client_id, client_secret)
+{
+    var token = client_id + ":" + client_secret;
+
+    // Should i be encoding this value????? does it matter???
+    // Base64 Encoding -> btoa
+    var hash = btoa(token); 
+
+    return "Basic " + hash;
+}
 
 function get(url) {
 
@@ -122,7 +132,7 @@ function getUserRepos(url, repos) {
       repos = [];
     }
     repos = repos.concat(response.data);
-    console.log(repos.length + " repos so far");
+    //console.log(repos.length + " repos so far");
     //console.log("repos- ",response);
     if (response.linkData) {
       if (parse_link_header(response.linkData).next) {
@@ -183,10 +193,10 @@ function getUserInfo(userName, dataObj) {
   indicatorDiv.style.width = '0%';
   indicatorDiv.innerHTML = '0% wait...';
 
-  getJSON('https://api.github.com/users/' + userName + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea')
+  getJSON('https://api.github.com/users/' + userName )
     .then(userData => {
-      console.log(userData);
-      console.log('Email-', userData.email);
+      //console.log(userData);
+      //console.log('Email-', userData.email);
       dataObj.setUser(userData);
 
       indicatorDiv.style.width = '10%';
@@ -195,13 +205,13 @@ function getUserInfo(userName, dataObj) {
 
 
 
-      let url = 'https://api.github.com/users/' + userData.login + '/repos?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+      let url = 'https://api.github.com/users/' + userData.login + '/repos?per_page=100';
 
       return getUserRepos(url);
 
       //console.log('Repo Array - ',repoArray);
     }).then((repos) => {
-      console.log('All fetched repos-', repos);
+      //console.log('All fetched repos-', repos);
       dataObj.setRepos(repos);
 
 
@@ -218,7 +228,7 @@ function getUserInfo(userName, dataObj) {
             return repo.fork === false && repo.size !== 0
           }).forEach((repo,currentIndex,repoArray)=>{
             var indecatorValue = 50/repoArray.length;
-              let url = repo.commits_url.replace('{/sha}', '')+'?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+              let url = repo.commits_url.replace('{/sha}', '')+'?per_page=100';
 
                sequence = sequence.then(()=>{
                 return getCommitPerRepos(url,null,repo,dataObj);
@@ -245,7 +255,7 @@ function getUserInfo(userName, dataObj) {
         return repo.fork === false && repo.size !== 0
       }).reduce((sequence,repo,currentIndex,repoArray)=>{
         var indecatorValue = 50/repoArray.length;
-      let url = repo.commits_url.replace('{/sha}', '')+'?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+      let url = repo.commits_url.replace('{/sha}', '')+'?per_page=100';
       return sequence.then(()=>{
         return getCommitPerRepos(url,null,repo,dataObj);
       }).then(commits=>{
@@ -275,7 +285,7 @@ function getUserInfo(userName, dataObj) {
       dataObj.getRepos().filter(repo => {
         return repo.fork === false && repo.size !== 0
       }).map((repo) => {
-        let url = repo.commits_url.replace('{/sha}', '') + '?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+        let url = repo.commits_url.replace('{/sha}', '') + '?per_page=100';
         return getCommitPerRepos(url, null, repo, dataObj);
       }).reduce((sequence, commitPromise, currentIndex, repoArray) => {
         var indecatorValue = 50 / repoArray.length;
@@ -289,7 +299,7 @@ function getUserInfo(userName, dataObj) {
           indicatorDiv.innerHTML = Number.parseFloat(10 + indecatorValue).toFixed(2) + '% wait...';
 
           if (currentIndex === repoArray.length - 1) {
-            console.log('All Done-', dataObj.getCommitMap());
+           // console.log('All Done-', dataObj.getCommitMap());
             fetchFollowing_n_Followers(dataObj);
             calculateDataAndGenerateChart(dataObj);
             checkRateLimit();
@@ -326,7 +336,7 @@ function fetchFollowing_n_Followers(dataObj) {
 
   Promise.resolve().then(() => {
 
-      return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      return getFollow_ing_ers(dataObj.getUser().url + '/following?per_page=100');
 
 
     })
@@ -339,7 +349,7 @@ function fetchFollowing_n_Followers(dataObj) {
       }
 
       followingObj.followArray.map(obj => {
-        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+        return getJSON(obj.url );
       }).reduce((sequence, followingObjPromise, curIndex, followingArray) => {
         //let indecatorValue = 20 / followingArray.length;
         return sequence.then(() => {
@@ -357,7 +367,7 @@ function fetchFollowing_n_Followers(dataObj) {
           dataObj.getFollowing().push(objData);
 
           if (curIndex === followingArray.length - 1) {
-            console.log('All Done Following-', dataObj.getFollowing());
+            //console.log('All Done Following-', dataObj.getFollowing());
             document.querySelector('#indicator').style.width = '99.9%';
             document.querySelector('#indicator').innerHTML = '99.9% wait...';
             buildFollowing_card(dataObj.getFollowing(), followingObj);
@@ -380,7 +390,7 @@ function fetchFollowing_n_Followers(dataObj) {
 
   Promise.resolve().then(() => {
 
-      return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100&client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+      return getFollow_ing_ers(dataObj.getUser().url + '/followers?per_page=100');
 
     })
     .then(followersObj => {
@@ -393,7 +403,7 @@ function fetchFollowing_n_Followers(dataObj) {
 
 
       followersObj.followArray.map(obj => {
-        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+        return getJSON(obj.url );
       }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
         //let indecatorValue = 20 / followerArray.length;
         return sequence.then(() => {
@@ -410,7 +420,7 @@ function fetchFollowing_n_Followers(dataObj) {
           //console.log('obj data-', objData.bio)
           dataObj.getFollowers().push(objData);
           if (curIndex === followerArray.length - 1) {
-            console.log('All Done Followers-', dataObj.getFollowers());
+           // console.log('All Done Followers-', dataObj.getFollowers());
             document.querySelector('#indicator').style.width = '99.9%';
             document.querySelector('#indicator').innerHTML = '99.9% wait...';
             buildFollowers_card(dataObj.getFollowers(), followersObj);
@@ -443,7 +453,7 @@ function loadPagingData(url) {
 
 
       followersObj.followArray.map(obj => {
-        return getJSON(obj.url + '?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea');
+        return getJSON(obj.url );
       }).reduce((sequence, followersObjPromise, curIndex, followerArray) => {
 
         return sequence.then(() => {
@@ -454,7 +464,7 @@ function loadPagingData(url) {
 
           followArray.push(objData);
           if (curIndex === followerArray.length - 1) {
-            console.log('All Done Followers-', followArray);
+           // console.log('All Done Followers-', followArray);
             if (url && url.indexOf('following') !== -1) {
               buildFollowing_card(followArray, followersObj, url);
             } else {
@@ -959,7 +969,7 @@ function createDataObject() {
 
 
 function checkRateLimit() {
-  let url = 'https://api.github.com/rate_limit?client_id=4451d14d8fff3a16d020&client_secret=d317892c35d7a7f4e383b92052cda6e8b7a3b3ea';
+  let url = 'https://api.github.com/rate_limit';
   getJSON(url).then(rateData => {
     //console.log(rateData);
     document.querySelector(".rate-limit").classList.toggle("rate-limited", rateData.rate.remaining === "0");
