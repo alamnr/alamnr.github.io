@@ -72,7 +72,7 @@
                 GitHub User Name</p>
               <!--<input type="text" class="form-control" id="gitUserName" placeholder="Ex: alamnr"> -->
               <div class="input-group text-center">
-                <input class="form-control py-2" type="search" placeholder="Ex: alamnr" id="gitUserName"
+                <input class="form-control py-2" type="text" placeholder="Ex: alamnr" id="gitUserName"
                   autofocus="autofocus">
                 <span class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" id="userSearchBtn">
@@ -131,21 +131,14 @@
       }
     });
 
-    document.getElementById('gitUserName').addEventListener('keyup', function (e) {
+    document.getElementById('gitUserName').addEventListener('keyup', (e) => {
+      e.preventDefault();
 
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
 
-        if (e.target.value) {
-          checkUserPresence(e.target.value);
-
-        } else {
-          document.getElementById('errMsg').innerHTML = 'User Name Can\'t be Blank';
-          document.getElementById('errMsg').style.color = 'red';
-        }
+        document.getElementById("userSearchBtn").click();
 
       }
-
-
 
     });
 
