@@ -16,9 +16,9 @@ function createCORSRequest(method, url) {
   return xhr;
 }
 
-function authenticateUser(client_id, client_secret)
+function authenticateUser(ci, cs)
 {
-    var token = client_id + ":" + client_secret;
+    var token = ci + ":" + cs;
 
     // Should i be encoding this value????? does it matter???
     // Base64 Encoding -> btoa
